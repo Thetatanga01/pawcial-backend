@@ -1,0 +1,30 @@
+# PostgreSQL Database Configuration
+quarkus:
+  datasource:
+    db-kind: postgresql
+    username: postgres
+    password: TS3yngKpv3P7x8
+    jdbc:
+      url: jdbc:postgresql://192.168.0.58:5432/pawcial
+      max-size: 16
+
+  # Flyway Configuration
+  flyway:
+    migrate-at-start: true
+    baseline-on-migrate: true
+    baseline-version: 0
+
+  # HTTP Configuration
+  http:
+    port: 8080
+    cors:
+      origins: "*"
+      methods: GET,POST,PUT,DELETE,OPTIONS,PATCH
+      headers: "*"
+
+  # Log Level
+  log:
+    level: INFO
+    category:
+      "org.flywaydb":
+        level: INFO
