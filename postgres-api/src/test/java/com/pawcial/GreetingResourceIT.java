@@ -1,4 +1,4 @@
-package com.example;
+package com.pawcial;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
