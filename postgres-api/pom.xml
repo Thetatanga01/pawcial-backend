@@ -91,6 +91,8 @@
     </dependency>
   </dependencies>
   <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>${quarkus.platform.group-id}</groupId>
@@ -107,15 +109,45 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${compiler-plugin.version}</version>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-maven-plugin</artifactId>
+        <version>${kotlin.version}</version>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>test-compile</id>
+            <goals>
+              <goal>test-compile</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
-          <compilerArgs>
-            <arg>-parameters</arg>
-          </compilerArgs>
+          <jvmTarget>21</jvmTarget>
+          <compilerPlugins>
+            <plugin>all-open</plugin>
+          </compilerPlugins>
+          <pluginOptions>
+            <option>all-open:annotation=jakarta.ws.rs.Path</option>
+            <option>all-open:annotation=jakarta.enterprise.context.ApplicationScoped</option>
+            <option>all-open:annotation=jakarta.persistence.Entity</option>
+          </pluginOptions>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-maven-allopen</artifactId>
+            <version>${kotlin.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
+
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire-plugin.version}</version>
@@ -126,6 +158,7 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
+
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>${surefire-plugin.version}</version>
@@ -144,70 +177,6 @@
             <maven.home>${maven.home}</maven.home>
           </systemPropertyVariables>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.jetbrains.kotlin</groupId>
-        <artifactId>kotlin-maven-plugin</artifactId>
-        <version>${kotlin.version}</version>
-        <executions>
-          <execution>
-            <id>compile</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-            <configuration>
-              <sourceDirs>
-                <source>src/main/java</source>
-                <source>target/generated-sources/annotations</source>
-              </sourceDirs>
-            </configuration>
-          </execution>
-          <execution>
-            <id>test-compile</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>test-compile</goal>
-            </goals>
-            <configuration>
-              <sourceDirs>
-                <source>src/test/java</source>
-                <source>target/generated-test-sources/test-annotations</source>
-              </sourceDirs>
-            </configuration>
-          </execution>
-        </executions>
-        <configuration>
-          <jvmTarget>1.8</jvmTarget>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>default-compile</id>
-            <phase>none</phase>
-          </execution>
-          <execution>
-            <id>default-testCompile</id>
-            <phase>none</phase>
-          </execution>
-          <execution>
-            <id>compile</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>testCompile</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
