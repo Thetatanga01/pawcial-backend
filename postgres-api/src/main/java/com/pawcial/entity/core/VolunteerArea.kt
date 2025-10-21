@@ -1,7 +1,8 @@
 package com.pawcial.entity.core
 
 import com.pawcial.entity.core.data.VolunteerAreaId
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanionBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import java.time.OffsetDateTime
@@ -9,8 +10,11 @@ import java.time.OffsetDateTime
 @Entity
 @Table(name = "volunteer_area", schema = "pawcial")
 @IdClass(VolunteerAreaId::class)
-class VolunteerArea : PanacheEntityBase() {
-@Id
+class VolunteerArea : PanacheEntityBase {
+
+    companion object : PanacheCompanionBase<VolunteerArea, VolunteerAreaId>
+
+    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "volunteer_id", nullable = false)
     var volunteer: Volunteer? = null

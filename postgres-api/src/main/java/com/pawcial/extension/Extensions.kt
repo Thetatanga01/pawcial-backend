@@ -1,10 +1,92 @@
 package com.pawcial.extension
 
 import com.pawcial.dto.*
-import com.pawcial.entity.core.Animal
+import com.pawcial.entity.core.*
 import com.pawcial.entity.dictionary.*
 
-// Extension function
+// Core entities extensions
+fun Species.toDto() = SpeciesDto(
+    id = this.id,
+    scientificName = this.scientificName,
+    commonName = this.commonName,
+    domesticStatus = this.domesticStatus
+)
+
+fun Breed.toDto() = BreedDto(
+    id = this.id,
+    speciesId = this.species?.id,
+    speciesName = this.species?.commonName,
+    name = this.name,
+    origin = this.origin
+)
+
+fun Facility.toDto() = FacilityDto(
+    id = this.id,
+    name = this.name,
+    type = this.type,
+    country = this.country,
+    city = this.city,
+    address = this.address
+)
+
+fun FacilityZone.toDto() = FacilityZoneDto(
+    id = this.id,
+    facilityId = this.facility?.id,
+    facilityName = this.facility?.name,
+    name = this.name,
+    purpose = this.purpose
+)
+
+fun FacilityUnit.toDto() = FacilityUnitDto(
+    id = this.id,
+    facilityId = this.facility?.id,
+    facilityName = this.facility?.name,
+    zoneId = this.zone?.id,
+    zoneName = this.zone?.name,
+    code = this.code,
+    type = this.type,
+    capacity = this.capacity
+)
+
+fun Person.toDto() = PersonDto(
+    id = this.id,
+    fullName = this.fullName,
+    phone = this.phone,
+    email = this.email,
+    address = this.address,
+    notes = this.notes,
+    isOrganization = this.isOrganization,
+    organizationName = this.organizationName,
+    organizationType = this.organizationType
+)
+
+fun Volunteer.toDto() = VolunteerDto(
+    id = this.id,
+    personId = this.person?.id,
+    personName = this.person?.fullName,
+    status = this.status,
+    startDate = this.startDate,
+    endDate = this.endDate,
+    volunteerCode = this.volunteerCode,
+    notes = this.notes
+)
+
+fun Asset.toDto() = AssetDto(
+    id = this.id,
+    facilityId = this.facility?.id,
+    facilityName = this.facility?.name,
+    unitId = this.unit?.id,
+    unitCode = this.unit?.code,
+    code = this.code,
+    name = this.name,
+    type = this.type,
+    serialNo = this.serialNo,
+    purchaseDate = this.purchaseDate,
+    warrantyEnd = this.warrantyEnd,
+    status = this.status
+)
+
+// Animal extension (existing)
 fun Animal.toDto() = AnimalDto(
     id = this.id,
     name = this.name,
@@ -13,6 +95,7 @@ fun Animal.toDto() = AnimalDto(
     breedName = this.breed?.name
 )
 
+// Dictionary entities extensions
 fun Color.toDto() = ColorDto(
     code = this.code,
     label = this.label

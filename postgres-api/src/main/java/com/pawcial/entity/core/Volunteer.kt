@@ -1,14 +1,19 @@
 package com.pawcial.entity.core
 
 import com.pawcial.entity.BaseEntity
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanionBase
 import jakarta.persistence.*
 import java.time.LocalDate
+import java.util.*
 
 
 @Entity
 @Table(name = "volunteer", schema = "pawcial")
 class Volunteer : BaseEntity() {
-@ManyToOne(fetch = FetchType.LAZY)
+
+    companion object : PanacheCompanionBase<Volunteer, UUID>
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "person_id", nullable = false)
     var person: Person? = null
 

@@ -1,12 +1,17 @@
 package com.pawcial.entity.core
 
 import com.pawcial.entity.BaseEntity
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanionBase
 import jakarta.persistence.*
+import java.util.*
 
 @Entity
 @Table(name = "person", schema = "pawcial")
 class Person : BaseEntity() {
-@Column(name = "full_name", nullable = false)
+
+    companion object : PanacheCompanionBase<Person, UUID>
+
+    @Column(name = "full_name", nullable = false)
     var fullName: String? = null
 
     var phone: String? = null

@@ -1,6 +1,7 @@
 package com.pawcial.entity.core
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanionBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.*
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -9,8 +10,11 @@ import java.util.*
 
 @Entity
 @Table(name = "animal_event", schema = "pawcial")
-class AnimalEvent : PanacheEntityBase() {
-@Id
+class AnimalEvent : PanacheEntityBase {
+
+    companion object : PanacheCompanionBase<AnimalEvent, UUID>
+
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition = "uuid")
     var id: UUID? = null

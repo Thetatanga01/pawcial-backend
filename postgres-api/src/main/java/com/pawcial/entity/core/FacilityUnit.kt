@@ -1,14 +1,19 @@
 package com.pawcial.entity.core
 
 import com.pawcial.entity.BaseEntity
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanionBase
 import jakarta.persistence.*
+import java.util.*
 
 @Entity
 @Table(name = "facility_unit", schema = "pawcial", uniqueConstraints = [
     UniqueConstraint(columnNames = ["facility_id", "code"])
 ])
 class FacilityUnit : BaseEntity() {
-@ManyToOne(fetch = FetchType.LAZY)
+
+    companion object : PanacheCompanionBase<FacilityUnit, UUID>
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "facility_id", nullable = false)
     var facility: Facility? = null
 

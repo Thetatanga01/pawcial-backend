@@ -1,7 +1,8 @@
 package com.pawcial.entity.core
 
 import com.pawcial.entity.core.data.AnimalBreedCompositionId
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanionBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import java.math.BigDecimal
@@ -11,8 +12,11 @@ import java.time.OffsetDateTime
 @Entity
 @Table(name = "animal_breed_composition", schema = "pawcial")
 @IdClass(AnimalBreedCompositionId::class)
-class AnimalBreedComposition : PanacheEntityBase() {
-@Id
+class AnimalBreedComposition : PanacheEntityBase {
+
+    companion object : PanacheCompanionBase<AnimalBreedComposition, AnimalBreedCompositionId>
+
+    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "animal_id", nullable = false)
     var animal: Animal? = null

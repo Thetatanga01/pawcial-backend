@@ -1,6 +1,7 @@
 package com.pawcial.entity.core
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanionBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import java.math.BigDecimal
@@ -10,8 +11,11 @@ import java.util.*
 
 @Entity
 @Table(name = "asset_service", schema = "pawcial")
-class AssetService : PanacheEntityBase() {
-@Id
+class AssetService : PanacheEntityBase {
+
+    companion object : PanacheCompanionBase<AssetService, UUID>
+
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition = "uuid")
     var id: UUID? = null
