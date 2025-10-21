@@ -22,4 +22,7 @@ class VolunteerAreaDictionary : PanacheEntityBase {
 
     @Column(columnDefinition = "TEXT")
     var description: String? = null
+
+    @Column(name = "is_active", nullable = false)
+    var isActive: Boolean = true
 }

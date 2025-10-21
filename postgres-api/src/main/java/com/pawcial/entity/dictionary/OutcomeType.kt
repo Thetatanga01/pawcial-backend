@@ -19,4 +19,7 @@ class OutcomeType : PanacheEntityBase {
 
     @Column(nullable = false)
     var label: String? = null
+
+    @Column(name = "is_active", nullable = false)
+    var isActive: Boolean = true
 }
