@@ -1,6 +1,7 @@
 package com.pawcial.entity.dictionary
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanionBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
@@ -8,8 +9,11 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "dict_hold_type", schema = "pawcial")
-class HoldType : PanacheEntityBase() {
-@Id
+class HoldType : PanacheEntityBase {
+
+    companion object : PanacheCompanionBase<HoldType, String>
+
+    @Id
     @Column(length = 50)
     var code: String? = null
 

@@ -1,16 +1,19 @@
 package com.pawcial.entity.dictionary
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanionBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 
-
 @Entity
 @Table(name = "dict_health_flag", schema = "pawcial")
-class HealthFlag : PanacheEntityBase() {
-@Id
+class HealthFlag : PanacheEntityBase {
+
+    companion object : PanacheCompanionBase<HealthFlag, String>
+
+    @Id
     @Column(length = 50)
     var code: String? = null
 

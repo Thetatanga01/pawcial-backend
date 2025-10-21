@@ -1,16 +1,19 @@
 package com.pawcial.entity.dictionary
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanionBase
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 
-
 @Entity
 @Table(name = "dict_placement_status", schema = "pawcial")
-class PlacementStatus : PanacheEntityBase() {
-@Id
+class PlacementStatus : PanacheEntityBase {
+
+    companion object : PanacheCompanionBase<PlacementStatus, String>
+
+    @Id
     @Column(length = 50)
     var code: String? = null
 
