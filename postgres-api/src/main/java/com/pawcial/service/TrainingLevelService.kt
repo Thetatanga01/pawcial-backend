@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class TrainingLevelService {
 
-    fun findAll(): List<TrainingLevelDto> {
-        return TrainingLevel.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<TrainingLevelDto> {
+        return if (all) {
+            TrainingLevel.findAll().list()
+        } else {
+            TrainingLevel.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class TrainingLevelService {
     fun toggleActive(code: String): Boolean {
         val trainingLevel = TrainingLevel.findById(code) ?: return false
         trainingLevel.isActive = !trainingLevel.isActive
+        trainingLevel.persist()
         return true
     }
 }

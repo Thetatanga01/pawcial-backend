@@ -17,8 +17,8 @@ class ObservationCategoryResource {
     lateinit var observationCategoryService: ObservationCategoryService
 
     @GET
-    fun getAllObservationCategories(): List<ObservationCategoryDto> {
-        return observationCategoryService.findAll()
+    fun getAllObservationCategories(@QueryParam("all") @DefaultValue("false") all: Boolean): List<ObservationCategoryDto> {
+        return observationCategoryService.findAll(all)
     }
 
     @POST

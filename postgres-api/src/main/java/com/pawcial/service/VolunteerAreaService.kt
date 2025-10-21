@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class VolunteerAreaService {
 
-    fun findAll(): List<VolunteerAreaDto> {
-        return VolunteerAreaDictionary.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<VolunteerAreaDto> {
+        return if (all) {
+            VolunteerAreaDictionary.findAll().list()
+        } else {
+            VolunteerAreaDictionary.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -30,6 +33,7 @@ class VolunteerAreaService {
     fun toggleActive(code: String): Boolean {
         val volunteerArea = VolunteerAreaDictionary.findById(code) ?: return false
         volunteerArea.isActive = !volunteerArea.isActive
+        volunteerArea.persist()
         return true
     }
 }

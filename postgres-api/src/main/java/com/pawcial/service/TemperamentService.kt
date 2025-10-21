@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class TemperamentService {
 
-    fun findAll(): List<TemperamentDto> {
-        return Temperament.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<TemperamentDto> {
+        return if (all) {
+            Temperament.findAll().list()
+        } else {
+            Temperament.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class TemperamentService {
     fun toggleActive(code: String): Boolean {
         val temperament = Temperament.findById(code) ?: return false
         temperament.isActive = !temperament.isActive
+        temperament.persist()
         return true
     }
 }

@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class ZonePurposeService {
 
-    fun findAll(): List<ZonePurposeDto> {
-        return ZonePurpose.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<ZonePurposeDto> {
+        return if (all) {
+            ZonePurpose.findAll().list()
+        } else {
+            ZonePurpose.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class ZonePurposeService {
     fun toggleActive(code: String): Boolean {
         val zonePurpose = ZonePurpose.findById(code) ?: return false
         zonePurpose.isActive = !zonePurpose.isActive
+        zonePurpose.persist()
         return true
     }
 }

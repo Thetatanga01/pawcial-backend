@@ -17,8 +17,8 @@ class OutcomeTypeResource {
     lateinit var outcomeTypeService: OutcomeTypeService
 
     @GET
-    fun getAllOutcomeTypes(): List<OutcomeTypeDto> {
-        return outcomeTypeService.findAll()
+    fun getAllOutcomeTypes(@QueryParam("all") @DefaultValue("false") all: Boolean): List<OutcomeTypeDto> {
+        return outcomeTypeService.findAll(all)
     }
 
     @POST

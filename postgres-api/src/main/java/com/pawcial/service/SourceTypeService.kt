@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class SourceTypeService {
 
-    fun findAll(): List<SourceTypeDto> {
-        return SourceType.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<SourceTypeDto> {
+        return if (all) {
+            SourceType.findAll().list()
+        } else {
+            SourceType.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class SourceTypeService {
     fun toggleActive(code: String): Boolean {
         val sourceType = SourceType.findById(code) ?: return false
         sourceType.isActive = !sourceType.isActive
+        sourceType.persist()
         return true
     }
 }

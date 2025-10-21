@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class SexService {
 
-    fun findAll(): List<SexDto> {
-        return Sex.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<SexDto> {
+        return if (all) {
+            Sex.findAll().list()
+        } else {
+            Sex.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class SexService {
     fun toggleActive(code: String): Boolean {
         val sex = Sex.findById(code) ?: return false
         sex.isActive = !sex.isActive
+        sex.persist()
         return true
     }
 }

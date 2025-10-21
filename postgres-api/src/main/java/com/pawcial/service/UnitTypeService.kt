@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class UnitTypeService {
 
-    fun findAll(): List<UnitTypeDto> {
-        return UnitType.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<UnitTypeDto> {
+        return if (all) {
+            UnitType.findAll().list()
+        } else {
+            UnitType.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class UnitTypeService {
     fun toggleActive(code: String): Boolean {
         val unitType = UnitType.findById(code) ?: return false
         unitType.isActive = !unitType.isActive
+        unitType.persist()
         return true
     }
 }

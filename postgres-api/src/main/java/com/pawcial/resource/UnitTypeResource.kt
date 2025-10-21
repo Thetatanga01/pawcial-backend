@@ -17,8 +17,8 @@ class UnitTypeResource {
     lateinit var unitTypeService: UnitTypeService
 
     @GET
-    fun getAllUnitTypes(): List<UnitTypeDto> {
-        return unitTypeService.findAll()
+    fun getAllUnitTypes(@QueryParam("all") @DefaultValue("false") all: Boolean): List<UnitTypeDto> {
+        return unitTypeService.findAll(all)
     }
 
     @POST

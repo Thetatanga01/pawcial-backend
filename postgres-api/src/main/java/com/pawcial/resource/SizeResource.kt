@@ -17,8 +17,8 @@ class SizeResource {
     lateinit var sizeService: SizeService
 
     @GET
-    fun getAllSizes(): List<SizeDto> {
-        return sizeService.findAll()
+    fun getAllSizes(@QueryParam("all") @DefaultValue("false") all: Boolean): List<SizeDto> {
+        return sizeService.findAll(all)
     }
 
     @POST

@@ -17,8 +17,8 @@ class DomesticStatusResource {
     lateinit var domesticStatusService: DomesticStatusService
 
     @GET
-    fun getAllDomesticStatuses(): List<DomesticStatusDto> {
-        return domesticStatusService.findAll()
+    fun getAllDomesticStatuses(@QueryParam("all") @DefaultValue("false") all: Boolean): List<DomesticStatusDto> {
+        return domesticStatusService.findAll(all)
     }
 
     @POST

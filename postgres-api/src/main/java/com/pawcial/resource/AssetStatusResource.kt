@@ -17,8 +17,8 @@ class AssetStatusResource {
     lateinit var assetStatusService: AssetStatusService
 
     @GET
-    fun getAllAssetStatuses(): List<AssetStatusDto> {
-        return assetStatusService.findAll()
+    fun getAllAssetStatuses(@QueryParam("all") @DefaultValue("false") all: Boolean): List<AssetStatusDto> {
+        return assetStatusService.findAll(all)
     }
 
     @POST

@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class SizeService {
 
-    fun findAll(): List<SizeDto> {
-        return Size.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<SizeDto> {
+        return if (all) {
+            Size.findAll().list()
+        } else {
+            Size.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class SizeService {
     fun toggleActive(code: String): Boolean {
         val size = Size.findById(code) ?: return false
         size.isActive = !size.isActive
+        size.persist()
         return true
     }
 }

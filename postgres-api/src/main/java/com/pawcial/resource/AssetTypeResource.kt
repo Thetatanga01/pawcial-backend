@@ -17,8 +17,8 @@ class AssetTypeResource {
     lateinit var assetTypeService: AssetTypeService
 
     @GET
-    fun getAllAssetTypes(): List<AssetTypeDto> {
-        return assetTypeService.findAll()
+    fun getAllAssetTypes(@QueryParam("all") @DefaultValue("false") all: Boolean): List<AssetTypeDto> {
+        return assetTypeService.findAll(all)
     }
 
     @POST

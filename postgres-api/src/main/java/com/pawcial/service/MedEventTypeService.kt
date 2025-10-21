@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class MedEventTypeService {
 
-    fun findAll(): List<MedEventTypeDto> {
-        return MedEventType.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<MedEventTypeDto> {
+        return if (all) {
+            MedEventType.findAll().list()
+        } else {
+            MedEventType.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class MedEventTypeService {
     fun toggleActive(code: String): Boolean {
         val medEventType = MedEventType.findById(code) ?: return false
         medEventType.isActive = !medEventType.isActive
+        medEventType.persist()
         return true
     }
 }

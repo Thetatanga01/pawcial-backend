@@ -17,8 +17,8 @@ class MedEventTypeResource {
     lateinit var medEventTypeService: MedEventTypeService
 
     @GET
-    fun getAllMedEventTypes(): List<MedEventTypeDto> {
-        return medEventTypeService.findAll()
+    fun getAllMedEventTypes(@QueryParam("all") @DefaultValue("false") all: Boolean): List<MedEventTypeDto> {
+        return medEventTypeService.findAll(all)
     }
 
     @POST

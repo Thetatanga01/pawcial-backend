@@ -17,8 +17,8 @@ class DoseRouteResource {
     lateinit var doseRouteService: DoseRouteService
 
     @GET
-    fun getAllDoseRoutes(): List<DoseRouteDto> {
-        return doseRouteService.findAll()
+    fun getAllDoseRoutes(@QueryParam("all") @DefaultValue("false") all: Boolean): List<DoseRouteDto> {
+        return doseRouteService.findAll(all)
     }
 
     @POST

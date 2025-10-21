@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class ColorService {
 
-    fun findAll(): List<ColorDto> {
-        return Color.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<ColorDto> {
+        return if (all) {
+            Color.findAll().list()
+        } else {
+            Color.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class ColorService {
     fun toggleActive(code: String): Boolean {
         val color = Color.findById(code) ?: return false
         color.isActive = !color.isActive
+        color.persist()
         return true
     }
 }

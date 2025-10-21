@@ -17,8 +17,8 @@ class ServiceTypeResource {
     lateinit var serviceTypeService: ServiceTypeService
 
     @GET
-    fun getAllServiceTypes(): List<ServiceTypeDto> {
-        return serviceTypeService.findAll()
+    fun getAllServiceTypes(@QueryParam("all") @DefaultValue("false") all: Boolean): List<ServiceTypeDto> {
+        return serviceTypeService.findAll(all)
     }
 
     @POST

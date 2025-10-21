@@ -17,8 +17,8 @@ class TrainingLevelResource {
     lateinit var trainingLevelService: TrainingLevelService
 
     @GET
-    fun getAllTrainingLevels(): List<TrainingLevelDto> {
-        return trainingLevelService.findAll()
+    fun getAllTrainingLevels(@QueryParam("all") @DefaultValue("false") all: Boolean): List<TrainingLevelDto> {
+        return trainingLevelService.findAll(all)
     }
 
     @POST

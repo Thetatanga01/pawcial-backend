@@ -17,8 +17,8 @@ class ZonePurposeResource {
     lateinit var zonePurposeService: ZonePurposeService
 
     @GET
-    fun getAllZonePurposes(): List<ZonePurposeDto> {
-        return zonePurposeService.findAll()
+    fun getAllZonePurposes(@QueryParam("all") @DefaultValue("false") all: Boolean): List<ZonePurposeDto> {
+        return zonePurposeService.findAll(all)
     }
 
     @POST

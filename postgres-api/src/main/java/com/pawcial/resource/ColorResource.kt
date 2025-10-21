@@ -17,8 +17,8 @@ class ColorResource {
     lateinit var colorService: ColorService
 
     @GET
-    fun getAllColors(): List<ColorDto> {
-        return colorService.findAll()
+    fun getAllColors(@QueryParam("all") @DefaultValue("false") all: Boolean): List<ColorDto> {
+        return colorService.findAll(all)
     }
 
     @POST

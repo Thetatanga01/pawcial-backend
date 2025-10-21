@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class HealthFlagService {
 
-    fun findAll(): List<HealthFlagDto> {
-        return HealthFlag.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<HealthFlagDto> {
+        return if (all) {
+            HealthFlag.findAll().list()
+        } else {
+            HealthFlag.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class HealthFlagService {
     fun toggleActive(code: String): Boolean {
         val healthFlag = HealthFlag.findById(code) ?: return false
         healthFlag.isActive = !healthFlag.isActive
+        healthFlag.persist()
         return true
     }
 }

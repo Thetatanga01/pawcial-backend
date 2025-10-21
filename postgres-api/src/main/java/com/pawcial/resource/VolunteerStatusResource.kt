@@ -17,8 +17,8 @@ class VolunteerStatusResource {
     lateinit var volunteerStatusService: VolunteerStatusService
 
     @GET
-    fun getAllVolunteerStatuses(): List<VolunteerStatusDto> {
-        return volunteerStatusService.findAll()
+    fun getAllVolunteerStatuses(@QueryParam("all") @DefaultValue("false") all: Boolean): List<VolunteerStatusDto> {
+        return volunteerStatusService.findAll(all)
     }
 
     @POST

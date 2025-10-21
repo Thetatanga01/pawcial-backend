@@ -17,8 +17,8 @@ class PlacementStatusResource {
     lateinit var placementStatusService: PlacementStatusService
 
     @GET
-    fun getAllPlacementStatuses(): List<PlacementStatusDto> {
-        return placementStatusService.findAll()
+    fun getAllPlacementStatuses(@QueryParam("all") @DefaultValue("false") all: Boolean): List<PlacementStatusDto> {
+        return placementStatusService.findAll(all)
     }
 
     @POST

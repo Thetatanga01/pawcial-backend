@@ -17,8 +17,8 @@ class TemperamentResource {
     lateinit var temperamentService: TemperamentService
 
     @GET
-    fun getAllTemperaments(): List<TemperamentDto> {
-        return temperamentService.findAll()
+    fun getAllTemperaments(@QueryParam("all") @DefaultValue("false") all: Boolean): List<TemperamentDto> {
+        return temperamentService.findAll(all)
     }
 
     @POST

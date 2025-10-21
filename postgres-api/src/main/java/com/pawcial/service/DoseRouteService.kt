@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class DoseRouteService {
 
-    fun findAll(): List<DoseRouteDto> {
-        return DoseRoute.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<DoseRouteDto> {
+        return if (all) {
+            DoseRoute.findAll().list()
+        } else {
+            DoseRoute.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class DoseRouteService {
     fun toggleActive(code: String): Boolean {
         val doseRoute = DoseRoute.findById(code) ?: return false
         doseRoute.isActive = !doseRoute.isActive
+        doseRoute.persist()
         return true
     }
 }

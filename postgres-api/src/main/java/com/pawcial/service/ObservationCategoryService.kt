@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class ObservationCategoryService {
 
-    fun findAll(): List<ObservationCategoryDto> {
-        return ObservationCategory.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<ObservationCategoryDto> {
+        return if (all) {
+            ObservationCategory.findAll().list()
+        } else {
+            ObservationCategory.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class ObservationCategoryService {
     fun toggleActive(code: String): Boolean {
         val observationCategory = ObservationCategory.findById(code) ?: return false
         observationCategory.isActive = !observationCategory.isActive
+        observationCategory.persist()
         return true
     }
 }

@@ -17,8 +17,8 @@ class HoldTypeResource {
     lateinit var holdTypeService: HoldTypeService
 
     @GET
-    fun getAllHoldTypes(): List<HoldTypeDto> {
-        return holdTypeService.findAll()
+    fun getAllHoldTypes(@QueryParam("all") @DefaultValue("false") all: Boolean): List<HoldTypeDto> {
+        return holdTypeService.findAll(all)
     }
 
     @POST

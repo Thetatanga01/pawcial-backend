@@ -17,8 +17,8 @@ class EventTypeResource {
     lateinit var eventTypeService: EventTypeService
 
     @GET
-    fun getAllEventTypes(): List<EventTypeDto> {
-        return eventTypeService.findAll()
+    fun getAllEventTypes(@QueryParam("all") @DefaultValue("false") all: Boolean): List<EventTypeDto> {
+        return eventTypeService.findAll(all)
     }
 
     @POST

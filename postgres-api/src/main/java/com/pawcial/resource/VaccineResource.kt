@@ -17,8 +17,8 @@ class VaccineResource {
     lateinit var vaccineService: VaccineService
 
     @GET
-    fun getAllVaccines(): List<VaccineDto> {
-        return vaccineService.findAll()
+    fun getAllVaccines(@QueryParam("all") @DefaultValue("false") all: Boolean): List<VaccineDto> {
+        return vaccineService.findAll(all)
     }
 
     @POST

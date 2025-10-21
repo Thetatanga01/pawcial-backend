@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class VaccineService {
 
-    fun findAll(): List<VaccineDto> {
-        return Vaccine.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<VaccineDto> {
+        return if (all) {
+            Vaccine.findAll().list()
+        } else {
+            Vaccine.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class VaccineService {
     fun toggleActive(code: String): Boolean {
         val vaccine = Vaccine.findById(code) ?: return false
         vaccine.isActive = !vaccine.isActive
+        vaccine.persist()
         return true
     }
 }

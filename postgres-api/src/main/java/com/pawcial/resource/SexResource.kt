@@ -17,8 +17,8 @@ class SexResource {
     lateinit var sexService: SexService
 
     @GET
-    fun getAllSexes(): List<SexDto> {
-        return sexService.findAll()
+    fun getAllSexes(@QueryParam("all") @DefaultValue("false") all: Boolean): List<SexDto> {
+        return sexService.findAll(all)
     }
 
     @POST

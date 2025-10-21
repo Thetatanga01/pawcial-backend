@@ -17,8 +17,8 @@ class PlacementTypeResource {
     lateinit var placementTypeService: PlacementTypeService
 
     @GET
-    fun getAllPlacementTypes(): List<PlacementTypeDto> {
-        return placementTypeService.findAll()
+    fun getAllPlacementTypes(@QueryParam("all") @DefaultValue("false") all: Boolean): List<PlacementTypeDto> {
+        return placementTypeService.findAll(all)
     }
 
     @POST

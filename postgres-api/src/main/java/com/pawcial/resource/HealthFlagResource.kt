@@ -17,8 +17,8 @@ class HealthFlagResource {
     lateinit var healthFlagService: HealthFlagService
 
     @GET
-    fun getAllHealthFlags(): List<HealthFlagDto> {
-        return healthFlagService.findAll()
+    fun getAllHealthFlags(@QueryParam("all") @DefaultValue("false") all: Boolean): List<HealthFlagDto> {
+        return healthFlagService.findAll(all)
     }
 
     @POST

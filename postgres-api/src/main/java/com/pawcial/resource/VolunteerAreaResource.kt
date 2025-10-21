@@ -17,8 +17,8 @@ class VolunteerAreaResource {
     lateinit var volunteerAreaService: VolunteerAreaService
 
     @GET
-    fun getAllVolunteerAreas(): List<VolunteerAreaDto> {
-        return volunteerAreaService.findAll()
+    fun getAllVolunteerAreas(@QueryParam("all") @DefaultValue("false") all: Boolean): List<VolunteerAreaDto> {
+        return volunteerAreaService.findAll(all)
     }
 
     @POST

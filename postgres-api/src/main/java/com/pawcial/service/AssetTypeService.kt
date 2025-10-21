@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class AssetTypeService {
 
-    fun findAll(): List<AssetTypeDto> {
-        return AssetType.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<AssetTypeDto> {
+        return if (all) {
+            AssetType.findAll().list()
+        } else {
+            AssetType.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class AssetTypeService {
     fun toggleActive(code: String): Boolean {
         val assetType = AssetType.findById(code) ?: return false
         assetType.isActive = !assetType.isActive
+        assetType.persist()
         return true
     }
 }

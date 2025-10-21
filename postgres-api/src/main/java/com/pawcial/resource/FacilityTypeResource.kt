@@ -17,8 +17,8 @@ class FacilityTypeResource {
     lateinit var facilityTypeService: FacilityTypeService
 
     @GET
-    fun getAllFacilityTypes(): List<FacilityTypeDto> {
-        return facilityTypeService.findAll()
+    fun getAllFacilityTypes(@QueryParam("all") @DefaultValue("false") all: Boolean): List<FacilityTypeDto> {
+        return facilityTypeService.findAll(all)
     }
 
     @POST

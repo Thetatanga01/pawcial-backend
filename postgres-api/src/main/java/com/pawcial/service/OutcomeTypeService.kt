@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class OutcomeTypeService {
 
-    fun findAll(): List<OutcomeTypeDto> {
-        return OutcomeType.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<OutcomeTypeDto> {
+        return if (all) {
+            OutcomeType.findAll().list()
+        } else {
+            OutcomeType.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class OutcomeTypeService {
     fun toggleActive(code: String): Boolean {
         val outcomeType = OutcomeType.findById(code) ?: return false
         outcomeType.isActive = !outcomeType.isActive
+        outcomeType.persist()
         return true
     }
 }

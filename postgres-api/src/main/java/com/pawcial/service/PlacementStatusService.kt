@@ -10,9 +10,12 @@ import jakarta.transaction.Transactional
 @ApplicationScoped
 class PlacementStatusService {
 
-    fun findAll(): List<PlacementStatusDto> {
-        return PlacementStatus.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<PlacementStatusDto> {
+        return if (all) {
+            PlacementStatus.findAll().list()
+        } else {
+            PlacementStatus.find("isActive", true).list()
+        }.map { it.toDto() }
     }
 
     @Transactional
@@ -29,6 +32,7 @@ class PlacementStatusService {
     fun toggleActive(code: String): Boolean {
         val placementStatus = PlacementStatus.findById(code) ?: return false
         placementStatus.isActive = !placementStatus.isActive
+        placementStatus.persist()
         return true
     }
 }
