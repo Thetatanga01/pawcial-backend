@@ -4,12 +4,27 @@ import com.pawcial.dto.CreateAnimalBreedCompositionRequest
 import com.pawcial.entity.core.Animal
 import com.pawcial.entity.core.AnimalBreedComposition
 import com.pawcial.entity.core.Breed
+import com.pawcial.entity.core.data.AnimalBreedCompositionId
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
+import java.util.*
 
 @ApplicationScoped
 class AnimalBreedCompositionService {
+
+    fun findAll(animalId: UUID?): List<AnimalBreedComposition> {
+        return if (animalId != null) {
+            AnimalBreedComposition.find("animal.id", animalId).list()
+        } else {
+            AnimalBreedComposition.findAll().list()
+        }
+    }
+
+    fun findById(animalId: UUID, breedId: UUID): AnimalBreedComposition {
+        return AnimalBreedComposition.findById(AnimalBreedCompositionId(animalId, breedId))
+            ?: throw NotFoundException("AnimalBreedComposition not found for animal: $animalId and breed: $breedId")
+    }
 
     @Transactional
     fun create(request: CreateAnimalBreedCompositionRequest): AnimalBreedComposition {
@@ -27,6 +42,15 @@ class AnimalBreedCompositionService {
         }
         composition.persist()
         return composition
+    }
+
+    @Transactional
+    fun delete(animalId: UUID, breedId: UUID) {
+        val id = AnimalBreedCompositionId(animalId, breedId)
+        val deleted = AnimalBreedComposition.deleteById(id)
+        if (!deleted) {
+            throw NotFoundException("AnimalBreedComposition not found for animal: $animalId and breed: $breedId")
+        }
     }
 }
 

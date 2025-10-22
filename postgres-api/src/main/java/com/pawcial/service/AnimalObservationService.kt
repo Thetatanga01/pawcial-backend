@@ -8,9 +8,23 @@ import com.pawcial.entity.core.Person
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
+import java.util.*
 
 @ApplicationScoped
 class AnimalObservationService {
+
+    fun findAll(animalId: UUID?): List<AnimalObservation> {
+        return if (animalId != null) {
+            AnimalObservation.find("animal.id", animalId).list()
+        } else {
+            AnimalObservation.findAll().list()
+        }
+    }
+
+    fun findById(id: UUID): AnimalObservation {
+        return AnimalObservation.findById(id)
+            ?: throw NotFoundException("AnimalObservation not found: $id")
+    }
 
     @Transactional
     fun create(request: CreateAnimalObservationRequest): AnimalObservation {
@@ -38,6 +52,14 @@ class AnimalObservationService {
         }
         observation.persist()
         return observation
+    }
+
+    @Transactional
+    fun delete(id: UUID) {
+        val deleted = AnimalObservation.deleteById(id)
+        if (!deleted) {
+            throw NotFoundException("AnimalObservation not found: $id")
+        }
     }
 }
 

@@ -6,9 +6,23 @@ import com.pawcial.entity.core.AssetService as AssetServiceEntity
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
+import java.util.*
 
 @ApplicationScoped
 class AssetServiceService {
+
+    fun findAll(assetId: UUID?): List<AssetServiceEntity> {
+        return if (assetId != null) {
+            AssetServiceEntity.find("asset.id", assetId).list()
+        } else {
+            AssetServiceEntity.findAll().list()
+        }
+    }
+
+    fun findById(id: UUID): AssetServiceEntity {
+        return AssetServiceEntity.findById(id)
+            ?: throw NotFoundException("AssetService not found: $id")
+    }
 
     @Transactional
     fun create(request: CreateAssetServiceRequest): AssetServiceEntity {
@@ -25,5 +39,13 @@ class AssetServiceService {
         }
         service.persist()
         return service
+    }
+
+    @Transactional
+    fun delete(id: UUID) {
+        val deleted = AssetServiceEntity.deleteById(id)
+        if (!deleted) {
+            throw NotFoundException("AssetService not found: $id")
+        }
     }
 }

@@ -36,10 +36,29 @@ class AnimalService {
 
     @Transactional
     fun create(request: CreateAnimalRequest): AnimalDto {
+        val species = com.pawcial.entity.core.Species.findById(request.speciesId)
+            ?: throw NotFoundException("Species not found: ${request.speciesId}")
+
+        val breed = request.breedId?.let {
+            com.pawcial.entity.core.Breed.findById(it)
+                ?: throw NotFoundException("Breed not found: $it")
+        }
+
         val animal = Animal().apply {
+            this.species = species
+            this.breed = breed
             name = request.name
             sex = request.sex
-            // ... diğer alanlar
+            birthDate = request.birthDate
+            ageMonthsEst = request.ageMonthsEst
+            size = request.size
+            color = request.color
+            trainingLevel = request.trainingLevel
+            sterilized = request.sterilized
+            isMixed = request.isMixed
+            originNote = request.originNote
+            currentUnitId = request.currentUnitId
+            currentSince = request.currentSince
         }
         animal.persist()
         return animal.toDto()
@@ -50,10 +69,29 @@ class AnimalService {
         val animal = Animal.findById(id)
             ?: throw NotFoundException("Animal not found: $id")
 
+        request.speciesId?.let {
+            animal.species = com.pawcial.entity.core.Species.findById(it)
+                ?: throw NotFoundException("Species not found: $it")
+        }
+
+        request.breedId?.let {
+            animal.breed = com.pawcial.entity.core.Breed.findById(it)
+                ?: throw NotFoundException("Breed not found: $it")
+        }
+
         animal.apply {
-            name = request.name ?: name
-            sex = request.sex ?: sex
-            // ... diğer alanlar
+            request.name?.let { name = it }
+            request.sex?.let { sex = it }
+            request.birthDate?.let { birthDate = it }
+            request.ageMonthsEst?.let { ageMonthsEst = it }
+            request.size?.let { size = it }
+            request.color?.let { color = it }
+            request.trainingLevel?.let { trainingLevel = it }
+            request.sterilized?.let { sterilized = it }
+            request.isMixed?.let { isMixed = it }
+            request.originNote?.let { originNote = it }
+            request.currentUnitId?.let { currentUnitId = it }
+            request.currentSince?.let { currentSince = it }
         }
         return animal.toDto()
     }

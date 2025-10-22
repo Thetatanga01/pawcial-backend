@@ -8,9 +8,32 @@ import com.pawcial.entity.core.Person
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
+import java.util.*
 
 @ApplicationScoped
 class AnimalPlacementService {
+
+    fun findAll(animalId: UUID?, personId: UUID?): List<AnimalPlacement> {
+        var query = "1=1"
+        val params = mutableMapOf<String, Any>()
+
+        if (animalId != null) {
+            query += " and animal.id = :animalId"
+            params["animalId"] = animalId
+        }
+
+        if (personId != null) {
+            query += " and person.id = :personId"
+            params["personId"] = personId
+        }
+
+        return AnimalPlacement.find(query, params).list()
+    }
+
+    fun findById(id: UUID): AnimalPlacement {
+        return AnimalPlacement.findById(id)
+            ?: throw NotFoundException("AnimalPlacement not found: $id")
+    }
 
     @Transactional
     fun create(request: CreateAnimalPlacementRequest): AnimalPlacement {
@@ -43,6 +66,14 @@ class AnimalPlacementService {
         }
         placement.persist()
         return placement
+    }
+
+    @Transactional
+    fun delete(id: UUID) {
+        val deleted = AnimalPlacement.deleteById(id)
+        if (!deleted) {
+            throw NotFoundException("AnimalPlacement not found: $id")
+        }
     }
 }
 
