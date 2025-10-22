@@ -18,5 +18,11 @@ class FacilityZoneResource {
     fun getAllFacilityZones(): List<FacilityZoneDto> {
         return facilityZoneService.findAll()
     }
+
+    @POST
+    fun createZone(request: com.pawcial.dto.CreateFacilityZoneRequest): jakarta.ws.rs.core.Response {
+        val created = facilityZoneService.create(request)
+        return jakarta.ws.rs.core.Response.status(jakarta.ws.rs.core.Response.Status.CREATED).entity(created).build()
+    }
 }
 

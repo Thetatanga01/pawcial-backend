@@ -18,5 +18,11 @@ class FacilityUnitResource {
     fun getAllFacilityUnits(): List<FacilityUnitDto> {
         return facilityUnitService.findAll()
     }
+
+    @POST
+    fun createUnit(request: com.pawcial.dto.CreateFacilityUnitRequest): jakarta.ws.rs.core.Response {
+        val created = facilityUnitService.create(request)
+        return jakarta.ws.rs.core.Response.status(jakarta.ws.rs.core.Response.Status.CREATED).entity(created).build()
+    }
 }
 

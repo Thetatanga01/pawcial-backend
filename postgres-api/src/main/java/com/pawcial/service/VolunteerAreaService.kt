@@ -1,7 +1,7 @@
 package com.pawcial.service
 
 import com.pawcial.dto.VolunteerAreaDto
-import com.pawcial.dto.CreateVolunteerAreaRequest
+import com.pawcial.dto.CreateVolunteerAreaDictionaryRequest
 import com.pawcial.entity.dictionary.VolunteerAreaDictionary
 import com.pawcial.extension.toDto
 import jakarta.enterprise.context.ApplicationScoped
@@ -19,7 +19,7 @@ class VolunteerAreaService {
     }
 
     @Transactional
-    fun create(request: CreateVolunteerAreaRequest): VolunteerAreaDto {
+    fun create(request: CreateVolunteerAreaDictionaryRequest): VolunteerAreaDto {
         val volunteerArea = VolunteerAreaDictionary().apply {
             code = request.code
             label = request.label

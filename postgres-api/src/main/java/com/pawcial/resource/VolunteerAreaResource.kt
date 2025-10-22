@@ -1,7 +1,7 @@
 package com.pawcial.resource
 
 import com.pawcial.dto.VolunteerAreaDto
-import com.pawcial.dto.CreateVolunteerAreaRequest
+import com.pawcial.dto.CreateVolunteerAreaDictionaryRequest
 import com.pawcial.service.VolunteerAreaService
 import jakarta.inject.Inject
 import jakarta.ws.rs.*
@@ -22,7 +22,7 @@ class VolunteerAreaResource {
     }
 
     @POST
-    fun createVolunteerArea(request: CreateVolunteerAreaRequest): Response {
+    fun createVolunteerArea(request: CreateVolunteerAreaDictionaryRequest): Response {
         val created = volunteerAreaService.create(request)
         return Response.status(Response.Status.CREATED).entity(created).build()
     }

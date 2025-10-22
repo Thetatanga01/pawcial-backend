@@ -1,8 +1,11 @@
 package com.pawcial.dto
 
+import java.util.*
+
 data class CreateVolunteerAreaRequest(
-    val code: String,
-    val label: String,
-    val description: String?
+    val volunteerId: UUID,
+    val areaCode: String,
+    val proficiencyLevel: String?,
+    val notes: String?
 )
 
