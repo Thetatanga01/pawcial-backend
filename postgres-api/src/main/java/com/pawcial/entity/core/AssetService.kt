@@ -1,9 +1,8 @@
 package com.pawcial.entity.core
 
+import com.pawcial.entity.BaseEntity
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanionBase
-import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.*
-import org.hibernate.annotations.CreationTimestamp
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 import java.util.*
@@ -11,14 +10,9 @@ import java.util.*
 
 @Entity
 @Table(name = "asset_service", schema = "pawcial")
-class AssetService : PanacheEntityBase {
+class AssetService : BaseEntity() {
 
     companion object : PanacheCompanionBase<AssetService, UUID>
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition = "uuid")
-    var id: UUID? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "asset_id", nullable = false)
@@ -37,8 +31,4 @@ class AssetService : PanacheEntityBase {
 
     @Column(columnDefinition = "TEXT")
     var notes: String? = null
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    var createdAt: OffsetDateTime? = null
 }

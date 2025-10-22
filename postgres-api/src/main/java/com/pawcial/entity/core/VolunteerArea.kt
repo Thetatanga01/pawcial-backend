@@ -32,4 +32,7 @@ class VolunteerArea : PanacheEntityBase {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     var createdAt: OffsetDateTime? = null
+
+    @Column(name = "is_active", nullable = false)
+    var isActive: Boolean = true
 }

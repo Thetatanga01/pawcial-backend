@@ -1,25 +1,18 @@
 package com.pawcial.entity.core
 
+import com.pawcial.entity.BaseEntity
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanionBase
-import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.*
-import org.hibernate.annotations.CreationTimestamp
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.OffsetDateTime
 import java.util.*
 
 
 @Entity
 @Table(name = "volunteer_activity", schema = "pawcial")
-class VolunteerActivity : PanacheEntityBase {
+class VolunteerActivity : BaseEntity() {
 
     companion object : PanacheCompanionBase<VolunteerActivity, UUID>
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition = "uuid")
-    var id: UUID? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "volunteer_id", nullable = false)
@@ -36,8 +29,4 @@ class VolunteerActivity : PanacheEntityBase {
 
     @Column(columnDefinition = "TEXT")
     var description: String? = null
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    var createdAt: OffsetDateTime? = null
 }

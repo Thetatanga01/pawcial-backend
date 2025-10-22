@@ -24,4 +24,7 @@ abstract class BaseEntity : PanacheEntityBase {
     @UpdateTimestamp
     @Column(name = "updated_at")
     var updatedAt: OffsetDateTime? = null
+
+    @Column(name = "is_active", nullable = false)
+    var isActive: Boolean = true
 }
