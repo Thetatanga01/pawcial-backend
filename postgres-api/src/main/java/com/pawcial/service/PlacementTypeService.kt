@@ -2,6 +2,7 @@ package com.pawcial.service
 
 import com.pawcial.dto.PlacementTypeDto
 import com.pawcial.dto.CreatePlacementTypeRequest
+import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.PlacementType
 import com.pawcial.extension.toDto
 import jakarta.enterprise.context.ApplicationScoped
@@ -20,6 +21,11 @@ class PlacementTypeService {
 
     @Transactional
     fun create(request: CreatePlacementTypeRequest): PlacementTypeDto {
+        val existing = PlacementType.findById(request.code)
+        if (existing != null) {
+            throw IllegalArgumentException("PlacementType with code '${request.code}' already exists")
+        }
+
         val placementType = PlacementType().apply {
             code = request.code
             label = request.label
@@ -27,6 +33,16 @@ class PlacementTypeService {
         placementType.persist()
         return placementType.toDto()
     }
+    @Transactional
+    fun updateLabel(code: String, request: UpdateLabelRequest): PlacementTypeDto {
+        val placementType = PlacementType.findById(code)
+            ?: throw IllegalArgumentException("PlacementType with code '$code' not found")
+
+        placementType.label = request.label
+        placementType.persist()
+        return placementType.toDto()
+    }
+
 
     @Transactional
     fun toggleActive(code: String): Boolean {

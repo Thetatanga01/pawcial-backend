@@ -2,6 +2,7 @@ package com.pawcial.service
 
 import com.pawcial.dto.VolunteerStatusDto
 import com.pawcial.dto.CreateVolunteerStatusRequest
+import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.VolunteerStatus
 import com.pawcial.extension.toDto
 import jakarta.enterprise.context.ApplicationScoped
@@ -20,10 +21,25 @@ class VolunteerStatusService {
 
     @Transactional
     fun create(request: CreateVolunteerStatusRequest): VolunteerStatusDto {
+        val existing = VolunteerStatus.findById(request.code)
+        if (existing != null) {
+            throw IllegalArgumentException("VolunteerStatus with code '${request.code}' already exists")
+        }
+
         val volunteerStatus = VolunteerStatus().apply {
             code = request.code
             label = request.label
         }
+        volunteerStatus.persist()
+        return volunteerStatus.toDto()
+    }
+
+    @Transactional
+    fun updateLabel(code: String, request: UpdateLabelRequest): VolunteerStatusDto {
+        val volunteerStatus = VolunteerStatus.findById(code)
+            ?: throw IllegalArgumentException("VolunteerStatus with code '$code' not found")
+
+        volunteerStatus.label = request.label
         volunteerStatus.persist()
         return volunteerStatus.toDto()
     }
@@ -36,4 +52,3 @@ class VolunteerStatusService {
         return true
     }
 }
-

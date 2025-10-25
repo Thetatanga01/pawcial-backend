@@ -2,6 +2,7 @@ package com.pawcial.service
 
 import com.pawcial.dto.MedEventTypeDto
 import com.pawcial.dto.CreateMedEventTypeRequest
+import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.MedEventType
 import com.pawcial.extension.toDto
 import jakarta.enterprise.context.ApplicationScoped
@@ -20,6 +21,11 @@ class MedEventTypeService {
 
     @Transactional
     fun create(request: CreateMedEventTypeRequest): MedEventTypeDto {
+        val existing = MedEventType.findById(request.code)
+        if (existing != null) {
+            throw IllegalArgumentException("MedEventType with code '${request.code}' already exists")
+        }
+
         val medEventType = MedEventType().apply {
             code = request.code
             label = request.label
@@ -27,6 +33,16 @@ class MedEventTypeService {
         medEventType.persist()
         return medEventType.toDto()
     }
+    @Transactional
+    fun updateLabel(code: String, request: UpdateLabelRequest): MedEventTypeDto {
+        val medEventType = MedEventType.findById(code)
+            ?: throw IllegalArgumentException("MedEventType with code '$code' not found")
+
+        medEventType.label = request.label
+        medEventType.persist()
+        return medEventType.toDto()
+    }
+
 
     @Transactional
     fun toggleActive(code: String): Boolean {

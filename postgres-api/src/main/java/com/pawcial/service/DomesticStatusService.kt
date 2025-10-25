@@ -2,6 +2,7 @@ package com.pawcial.service
 
 import com.pawcial.dto.DomesticStatusDto
 import com.pawcial.dto.CreateDomesticStatusRequest
+import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.DomesticStatus
 import com.pawcial.extension.toDto
 import jakarta.enterprise.context.ApplicationScoped
@@ -20,6 +21,11 @@ class DomesticStatusService {
 
     @Transactional
     fun create(request: CreateDomesticStatusRequest): DomesticStatusDto {
+        val existing = DomesticStatus.findById(request.code)
+        if (existing != null) {
+            throw IllegalArgumentException("DomesticStatus with code '${request.code}' already exists")
+        }
+
         val domesticStatus = DomesticStatus().apply {
             code = request.code
             label = request.label
@@ -27,6 +33,16 @@ class DomesticStatusService {
         domesticStatus.persist()
         return domesticStatus.toDto()
     }
+    @Transactional
+    fun updateLabel(code: String, request: UpdateLabelRequest): DomesticStatusDto {
+        val domesticStatus = DomesticStatus.findById(code)
+            ?: throw IllegalArgumentException("DomesticStatus with code '$code' not found")
+
+        domesticStatus.label = request.label
+        domesticStatus.persist()
+        return domesticStatus.toDto()
+    }
+
 
     @Transactional
     fun toggleActive(code: String): Boolean {

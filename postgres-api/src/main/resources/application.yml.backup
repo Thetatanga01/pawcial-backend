@@ -39,13 +39,9 @@ quarkus:
   http:
     port: 8000
     cors:
-      ~: true
-      origins: "/.*/"
-      methods: "GET,POST,PUT,DELETE,OPTIONS,PATCH"
+      origins: "*"
+      methods: GET,POST,PUT,DELETE,OPTIONS,PATCH
       headers: "*"
-      exposed-headers: "*"
-      access-control-max-age: 24H
-      access-control-allow-credentials: false
 
   # Log Level
   log:
@@ -53,18 +49,3 @@ quarkus:
     category:
       "org.flywaydb":
         level: INFO
-
-  # OpenAPI/Swagger Configuration
-  smallrye-openapi:
-    info-title: Pawcial API
-    info-version: 1.0.0
-    info-description: Pawcial - Hayvan Barınağı Yönetim Sistemi REST API
-    info-contact-name: Pawcial Team
-    servers:
-      - url: http://localhost:8000
-        description: Development server
-    path: /openapi
-  swagger-ui:
-    always-include: true
-    path: /swagger-ui
-
