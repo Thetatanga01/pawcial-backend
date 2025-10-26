@@ -55,7 +55,7 @@ class SpeciesService {
     fun delete(id: UUID) {
         val species = Species.findById(id)
             ?: throw NotFoundException("Species not found: $id")
-        species.isActive = false
+        species.isActive = !species.isActive
         species.persist()
     }
 }

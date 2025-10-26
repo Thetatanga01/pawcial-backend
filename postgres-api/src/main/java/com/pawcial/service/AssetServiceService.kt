@@ -50,7 +50,7 @@ class AssetServiceService {
     fun delete(id: UUID) {
         val service = AssetServiceEntity.findById(id)
             ?: throw NotFoundException("AssetService not found: $id")
-        service.isActive = false
+        service.isActive = !service.isActive
         service.persist()
     }
 }

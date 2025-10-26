@@ -20,9 +20,24 @@ class AnimalResource {
     fun getAllAnimals(
         @QueryParam("species") speciesId: UUID?,
         @QueryParam("status") status: String?,
-        @QueryParam("all") @DefaultValue("false") all: Boolean
-    ): List<AnimalDto> {
-        return animalService.findAll(speciesId, status, all)
+        @QueryParam("all") @DefaultValue("false") all: Boolean,
+        @QueryParam("page") @DefaultValue("0") page: Int,
+        @QueryParam("size") @DefaultValue("20") size: Int
+    ): PagedResponse<AnimalDto> {
+        return animalService.findAll(speciesId, status, all, page, size)
+    }
+
+    @GET
+    @Path("/search")
+    fun searchAnimals(
+        @QueryParam("name") name: String?,
+        @QueryParam("speciesName") speciesName: String?,
+        @QueryParam("breedName") breedName: String?,
+        @QueryParam("all") @DefaultValue("false") all: Boolean,
+        @QueryParam("page") @DefaultValue("0") page: Int,
+        @QueryParam("size") @DefaultValue("20") size: Int
+    ): PagedResponse<AnimalDto> {
+        return animalService.search(name, speciesName, breedName, all, page, size)
     }
 
     @GET

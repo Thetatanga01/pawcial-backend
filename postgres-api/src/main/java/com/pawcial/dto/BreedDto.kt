@@ -7,5 +7,6 @@ data class BreedDto(
     val speciesId: UUID?,
     val speciesName: String?,
     val name: String?,
-    val origin: String?
+    val origin: String?,
+    val isActive: Boolean
 )

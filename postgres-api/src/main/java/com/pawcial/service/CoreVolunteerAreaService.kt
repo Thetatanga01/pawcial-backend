@@ -50,7 +50,7 @@ class CoreVolunteerAreaService {
         val id = VolunteerAreaId(volunteerId, areaCode)
         val volunteerArea = VolunteerArea.findById(id)
             ?: throw NotFoundException("VolunteerArea not found for volunteer: $volunteerId and area: $areaCode")
-        volunteerArea.isActive = false
+        volunteerArea.isActive = !volunteerArea.isActive
         volunteerArea.persist()
     }
 }

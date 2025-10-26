@@ -69,7 +69,7 @@ class VolunteerService {
     fun delete(id: UUID) {
         val volunteer = Volunteer.findById(id)
             ?: throw NotFoundException("Volunteer not found: $id")
-        volunteer.isActive = false
+        volunteer.isActive = !volunteer.isActive
         volunteer.persist()
     }
 }

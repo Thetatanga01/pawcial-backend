@@ -63,7 +63,7 @@ class AnimalObservationService {
     fun delete(id: UUID) {
         val observation = AnimalObservation.findById(id)
             ?: throw NotFoundException("AnimalObservation not found: $id")
-        observation.isActive = false
+        observation.isActive = !observation.isActive
         observation.persist()
     }
 }

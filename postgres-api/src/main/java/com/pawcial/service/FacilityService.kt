@@ -59,7 +59,7 @@ class FacilityService {
     fun delete(id: UUID) {
         val facility = Facility.findById(id)
             ?: throw NotFoundException("Facility not found: $id")
-        facility.isActive = false
+        facility.isActive = !facility.isActive
         facility.persist()
     }
 }

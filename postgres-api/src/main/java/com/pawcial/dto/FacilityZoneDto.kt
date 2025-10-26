@@ -7,6 +7,7 @@ data class FacilityZoneDto(
     val facilityId: UUID?,
     val facilityName: String?,
     val name: String?,
-    val purpose: String?
+    val purpose: String?,
+    val isActive: Boolean
 )
 

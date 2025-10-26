@@ -18,7 +18,7 @@ class AnimalService {
 
     private val log = Logger.getLogger(AnimalService::class.java)
 
-    fun findAll(speciesId: UUID?, status: String?, all: Boolean = false): List<AnimalDto> {
+    fun findAll(speciesId: UUID?, status: String?, all: Boolean = false, page: Int = 0, size: Int = 20): PagedResponse<AnimalDto> {
         var query = if (all) "1=1" else "isActive = true"
         val params = mutableMapOf<String, Any>()
 
@@ -32,14 +32,72 @@ class AnimalService {
             params["status"] = status
         }
 
-        return Animal.find(query, params)
+        // Get total count
+        val totalElements = Animal.count(query, params)
+
+        // Get paginated results
+        val content = Animal.find(query, params)
+            .page(page, size)
             .list()
             .map { it.toDto() }
+
+        val totalPages = ((totalElements + size - 1) / size).toInt()
+
+        return PagedResponse(
+            content = content,
+            page = page,
+            size = size,
+            totalElements = totalElements,
+            totalPages = totalPages,
+            hasNext = page < totalPages - 1,
+            hasPrevious = page > 0
+        )
     }
 
     fun findById(id: UUID): AnimalDto {
         return Animal.findById(id)?.toDto()
             ?: throw NotFoundException("Animal not found: $id")
+    }
+
+    fun search(name: String?, speciesName: String?, breedName: String?, all: Boolean = false, page: Int = 0, size: Int = 20): PagedResponse<AnimalDto> {
+        var query = if (all) "1=1" else "isActive = true"
+        val params = mutableMapOf<String, Any>()
+
+        if (!name.isNullOrBlank()) {
+            query += " and lower(name) like lower(:name)"
+            params["name"] = "%$name%"
+        }
+
+        if (!speciesName.isNullOrBlank()) {
+            query += " and lower(species.commonName) like lower(:speciesName)"
+            params["speciesName"] = "%$speciesName%"
+        }
+
+        if (!breedName.isNullOrBlank()) {
+            query += " and lower(breed.name) like lower(:breedName)"
+            params["breedName"] = "%$breedName%"
+        }
+
+        // Get total count
+        val totalElements = Animal.count(query, params)
+
+        // Get paginated results
+        val content = Animal.find(query, params)
+            .page(page, size)
+            .list()
+            .map { it.toDto() }
+
+        val totalPages = ((totalElements + size - 1) / size).toInt()
+
+        return PagedResponse(
+            content = content,
+            page = page,
+            size = size,
+            totalElements = totalElements,
+            totalPages = totalPages,
+            hasNext = page < totalPages - 1,
+            hasPrevious = page > 0
+        )
     }
 
     @Transactional
@@ -155,7 +213,7 @@ class AnimalService {
     fun delete(id: UUID) {
         val animal = Animal.findById(id)
             ?: throw NotFoundException("Animal not found: $id")
-        animal.isActive = false
+        animal.isActive = !animal.isActive
         animal.persist()
     }
 }

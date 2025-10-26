@@ -54,7 +54,7 @@ class AnimalBreedCompositionService {
         val id = AnimalBreedCompositionId(animalId, breedId)
         val composition = AnimalBreedComposition.findById(id)
             ?: throw NotFoundException("AnimalBreedComposition not found for animal: $animalId and breed: $breedId")
-        composition.isActive = false
+        composition.isActive = !composition.isActive
         composition.persist()
     }
 }

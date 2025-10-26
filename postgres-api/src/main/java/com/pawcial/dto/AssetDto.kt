@@ -15,6 +15,7 @@ data class AssetDto(
     val serialNo: String?,
     val purchaseDate: LocalDate?,
     val warrantyEnd: LocalDate?,
-    val status: String?
+    val status: String?,
+    val isActive: Boolean
 )
 

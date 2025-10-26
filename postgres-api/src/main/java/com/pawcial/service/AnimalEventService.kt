@@ -99,7 +99,7 @@ class AnimalEventService {
     fun delete(id: UUID) {
         val event = AnimalEvent.findById(id)
             ?: throw NotFoundException("AnimalEvent not found: $id")
-        event.isActive = false
+        event.isActive = !event.isActive
         event.persist()
     }
 }

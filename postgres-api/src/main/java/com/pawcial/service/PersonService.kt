@@ -65,7 +65,7 @@ class PersonService {
     fun delete(id: UUID) {
         val person = Person.findById(id)
             ?: throw NotFoundException("Person not found: $id")
-        person.isActive = false
+        person.isActive = !person.isActive
         person.persist()
     }
 }

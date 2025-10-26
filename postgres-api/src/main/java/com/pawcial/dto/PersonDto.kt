@@ -11,6 +11,7 @@ data class PersonDto(
     val notes: String?,
     val isOrganization: Boolean,
     val organizationName: String?,
-    val organizationType: String?
+    val organizationType: String?,
+    val isActive: Boolean
 )
 

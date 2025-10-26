@@ -9,7 +9,8 @@ fun Species.toDto() = SpeciesDto(
     id = this.id,
     scientificName = this.scientificName,
     commonName = this.commonName,
-    domesticStatus = this.domesticStatus
+    domesticStatus = this.domesticStatus,
+    isActive = this.isActive
 )
 
 fun Breed.toDto() = BreedDto(
@@ -17,7 +18,8 @@ fun Breed.toDto() = BreedDto(
     speciesId = this.species?.id,
     speciesName = this.species?.commonName,
     name = this.name,
-    origin = this.origin
+    origin = this.origin,
+    isActive = this.isActive
 )
 
 fun Facility.toDto() = FacilityDto(
@@ -26,7 +28,8 @@ fun Facility.toDto() = FacilityDto(
     type = this.type,
     country = this.country,
     city = this.city,
-    address = this.address
+    address = this.address,
+    isActive = this.isActive
 )
 
 fun FacilityZone.toDto() = FacilityZoneDto(
@@ -34,7 +37,8 @@ fun FacilityZone.toDto() = FacilityZoneDto(
     facilityId = this.facility?.id,
     facilityName = this.facility?.name,
     name = this.name,
-    purpose = this.purpose
+    purpose = this.purpose,
+    isActive = this.isActive
 )
 
 fun FacilityUnit.toDto() = FacilityUnitDto(
@@ -45,7 +49,8 @@ fun FacilityUnit.toDto() = FacilityUnitDto(
     zoneName = this.zone?.name,
     code = this.code,
     type = this.type,
-    capacity = this.capacity
+    capacity = this.capacity,
+    isActive = this.isActive
 )
 
 fun Person.toDto() = PersonDto(
@@ -57,7 +62,8 @@ fun Person.toDto() = PersonDto(
     notes = this.notes,
     isOrganization = this.isOrganization,
     organizationName = this.organizationName,
-    organizationType = this.organizationType
+    organizationType = this.organizationType,
+    isActive = this.isActive
 )
 
 fun Volunteer.toDto() = VolunteerDto(
@@ -68,7 +74,8 @@ fun Volunteer.toDto() = VolunteerDto(
     startDate = this.startDate,
     endDate = this.endDate,
     volunteerCode = this.volunteerCode,
-    notes = this.notes
+    notes = this.notes,
+    isActive = this.isActive
 )
 
 fun Asset.toDto() = AssetDto(
@@ -83,7 +90,8 @@ fun Asset.toDto() = AssetDto(
     serialNo = this.serialNo,
     purchaseDate = this.purchaseDate,
     warrantyEnd = this.warrantyEnd,
-    status = this.status
+    status = this.status,
+    isActive = this.isActive
 )
 
 // Animal extension (existing)
@@ -106,133 +114,159 @@ fun Animal.toDto() = AnimalDto(
     currentUnitId = this.currentUnitId,
     currentSince = this.currentSince,
     temperaments = this.temperaments.map { it.code ?: "" },
-    healthFlags = this.healthFlags.map { it.code ?: "" }
+    healthFlags = this.healthFlags.map { it.code ?: "" },
+    isActive = this.isActive
 )
 
 // Dictionary entities extensions
 fun Color.toDto() = ColorDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun AssetStatus.toDto() = AssetStatusDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun AssetType.toDto() = AssetTypeDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun DomesticStatus.toDto() = DomesticStatusDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun DoseRoute.toDto() = DoseRouteDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun EventType.toDto() = EventTypeDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun FacilityType.toDto() = FacilityTypeDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun HealthFlag.toDto() = HealthFlagDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun HoldType.toDto() = HoldTypeDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun MedEventType.toDto() = MedEventTypeDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun ObservationCategory.toDto() = ObservationCategoryDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun OutcomeType.toDto() = OutcomeTypeDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun PlacementStatus.toDto() = PlacementStatusDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun PlacementType.toDto() = PlacementTypeDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun ServiceType.toDto() = ServiceTypeDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun Sex.toDto() = SexDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun Size.toDto() = SizeDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun SourceType.toDto() = SourceTypeDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun Temperament.toDto() = TemperamentDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun TrainingLevel.toDto() = TrainingLevelDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun UnitType.toDto() = UnitTypeDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun Vaccine.toDto() = VaccineDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun VolunteerAreaDictionary.toDto() = VolunteerAreaDto(
     code = this.code,
     label = this.label,
-    description = this.description
+    description = this.description,
+    isActive = this.isActive
 )
 
 fun VolunteerStatus.toDto() = VolunteerStatusDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 
 fun ZonePurpose.toDto() = ZonePurposeDto(
     code = this.code,
-    label = this.label
+    label = this.label,
+    isActive = this.isActive
 )
 

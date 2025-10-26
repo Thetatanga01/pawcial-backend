@@ -72,7 +72,7 @@ class AnimalPlacementService {
     fun delete(id: UUID) {
         val placement = AnimalPlacement.findById(id)
             ?: throw NotFoundException("AnimalPlacement not found: $id")
-        placement.isActive = false
+        placement.isActive = !placement.isActive
         placement.persist()
     }
 }

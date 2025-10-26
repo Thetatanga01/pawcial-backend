@@ -63,7 +63,7 @@ class FacilityZoneService {
     fun delete(id: UUID) {
         val zone = FacilityZone.findById(id)
             ?: throw NotFoundException("FacilityZone not found: $id")
-        zone.isActive = false
+        zone.isActive = !zone.isActive
         zone.persist()
     }
 }

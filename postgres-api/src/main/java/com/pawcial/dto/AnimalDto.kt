@@ -23,7 +23,8 @@ data class AnimalDto(
     val currentUnitId: UUID?,
     val currentSince: OffsetDateTime?,
     val temperaments: List<String>?,
-    val healthFlags: List<String>?
+    val healthFlags: List<String>?,
+    val isActive: Boolean
 )
 
 

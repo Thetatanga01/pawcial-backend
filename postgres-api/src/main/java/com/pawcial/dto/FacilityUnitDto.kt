@@ -10,6 +10,7 @@ data class FacilityUnitDto(
     val zoneName: String?,
     val code: String?,
     val type: String?,
-    val capacity: Int?
+    val capacity: Int?,
+    val isActive: Boolean
 )
 

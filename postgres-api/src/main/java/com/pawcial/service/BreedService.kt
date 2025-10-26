@@ -63,7 +63,7 @@ class BreedService {
     fun delete(id: UUID) {
         val breed = Breed.findById(id)
             ?: throw NotFoundException("Breed not found: $id")
-        breed.isActive = false
+        breed.isActive = !breed.isActive
         breed.persist()
     }
 }

@@ -11,6 +11,7 @@ data class VolunteerDto(
     val startDate: LocalDate?,
     val endDate: LocalDate?,
     val volunteerCode: String?,
-    val notes: String?
+    val notes: String?,
+    val isActive: Boolean
 )
 

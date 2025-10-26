@@ -85,7 +85,7 @@ class AssetService {
     fun delete(id: UUID) {
         val asset = Asset.findById(id)
             ?: throw NotFoundException("Asset not found: $id")
-        asset.isActive = false
+        asset.isActive = !asset.isActive
         asset.persist()
     }
 }
