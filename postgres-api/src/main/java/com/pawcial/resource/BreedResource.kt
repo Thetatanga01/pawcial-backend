@@ -24,10 +24,13 @@ class BreedResource {
     lateinit var breedService: BreedService
 
     @GET
-    @Operation(summary = "Tüm ırkları listele")
+    @Operation(summary = "Tüm ırkları listele", description = "Aktif veya tüm ırkları getirir")
     @APIResponse(responseCode = "200", description = "Başarılı")
-    fun getAllBreeds(): List<BreedDto> {
-        return breedService.findAll()
+    fun getAllBreeds(
+        @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ): List<BreedDto> {
+        return breedService.findAll(all)
     }
 
     @GET

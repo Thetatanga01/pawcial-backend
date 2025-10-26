@@ -24,10 +24,13 @@ class FacilityZoneResource {
     lateinit var facilityZoneService: FacilityZoneService
 
     @GET
-    @Operation(summary = "Tüm tesis bölgelerini listele")
+    @Operation(summary = "Tüm tesis bölgelerini listele", description = "Aktif veya tüm tesis bölgelerini getirir")
     @APIResponse(responseCode = "200", description = "Başarılı")
-    fun getAllFacilityZones(): List<FacilityZoneDto> {
-        return facilityZoneService.findAll()
+    fun getAllFacilityZones(
+        @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ): List<FacilityZoneDto> {
+        return facilityZoneService.findAll(all)
     }
 
     @GET

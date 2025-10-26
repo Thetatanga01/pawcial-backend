@@ -11,11 +11,16 @@ import java.util.*
 @ApplicationScoped
 class VolunteerActivityService {
 
-    fun findAll(volunteerId: UUID?): List<VolunteerActivity> {
+    fun findAll(volunteerId: UUID?, all: Boolean = false): List<VolunteerActivity> {
+        val activeFilter = if (all) "" else " and isActive = true"
         return if (volunteerId != null) {
-            VolunteerActivity.find("volunteer.id", volunteerId).list()
+            VolunteerActivity.find("volunteer.id = ?1$activeFilter", volunteerId).list()
         } else {
-            VolunteerActivity.findAll().list()
+            if (all) {
+                VolunteerActivity.findAll().list()
+            } else {
+                VolunteerActivity.find("isActive = true").list()
+            }
         }
     }
 
@@ -42,10 +47,10 @@ class VolunteerActivityService {
 
     @Transactional
     fun delete(id: UUID) {
-        val deleted = VolunteerActivity.deleteById(id)
-        if (!deleted) {
-            throw NotFoundException("VolunteerActivity not found: $id")
-        }
+        val activity = VolunteerActivity.findById(id)
+            ?: throw NotFoundException("VolunteerActivity not found: $id")
+        activity.isActive = false
+        activity.persist()
     }
 }
 

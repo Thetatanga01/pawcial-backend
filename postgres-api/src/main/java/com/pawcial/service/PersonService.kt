@@ -13,9 +13,12 @@ import java.util.*
 @ApplicationScoped
 class PersonService {
 
-    fun findAll(): List<PersonDto> {
-        return Person.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<PersonDto> {
+        return if (all) {
+            Person.findAll().list().map { it.toDto() }
+        } else {
+            Person.find("isActive = true").list().map { it.toDto() }
+        }
     }
 
     fun findById(id: UUID): PersonDto {
@@ -60,9 +63,9 @@ class PersonService {
 
     @Transactional
     fun delete(id: UUID) {
-        val deleted = Person.deleteById(id)
-        if (!deleted) {
-            throw NotFoundException("Person not found: $id")
-        }
+        val person = Person.findById(id)
+            ?: throw NotFoundException("Person not found: $id")
+        person.isActive = false
+        person.persist()
     }
 }

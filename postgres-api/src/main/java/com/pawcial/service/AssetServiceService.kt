@@ -11,11 +11,16 @@ import java.util.*
 @ApplicationScoped
 class AssetServiceService {
 
-    fun findAll(assetId: UUID?): List<AssetServiceEntity> {
+    fun findAll(assetId: UUID?, all: Boolean = false): List<AssetServiceEntity> {
+        val activeFilter = if (all) "" else " and isActive = true"
         return if (assetId != null) {
-            AssetServiceEntity.find("asset.id", assetId).list()
+            AssetServiceEntity.find("asset.id = ?1$activeFilter", assetId).list()
         } else {
-            AssetServiceEntity.findAll().list()
+            if (all) {
+                AssetServiceEntity.findAll().list()
+            } else {
+                AssetServiceEntity.find("isActive = true").list()
+            }
         }
     }
 
@@ -43,9 +48,9 @@ class AssetServiceService {
 
     @Transactional
     fun delete(id: UUID) {
-        val deleted = AssetServiceEntity.deleteById(id)
-        if (!deleted) {
-            throw NotFoundException("AssetService not found: $id")
-        }
+        val service = AssetServiceEntity.findById(id)
+            ?: throw NotFoundException("AssetService not found: $id")
+        service.isActive = false
+        service.persist()
     }
 }

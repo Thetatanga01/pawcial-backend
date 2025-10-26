@@ -18,8 +18,8 @@ class AnimalService {
 
     private val log = Logger.getLogger(AnimalService::class.java)
 
-    fun findAll(speciesId: UUID?, status: String?): List<AnimalDto> {
-        var query = "1=1"
+    fun findAll(speciesId: UUID?, status: String?, all: Boolean = false): List<AnimalDto> {
+        var query = if (all) "1=1" else "isActive = true"
         val params = mutableMapOf<String, Any>()
 
         if (speciesId != null) {
@@ -153,9 +153,9 @@ class AnimalService {
 
     @Transactional
     fun delete(id: UUID) {
-        val deleted = Animal.deleteById(id)
-        if (!deleted) {
-            throw NotFoundException("Animal not found: $id")
-        }
+        val animal = Animal.findById(id)
+            ?: throw NotFoundException("Animal not found: $id")
+        animal.isActive = false
+        animal.persist()
     }
 }

@@ -15,8 +15,10 @@ class FacilityUnitResource {
     lateinit var facilityUnitService: FacilityUnitService
 
     @GET
-    fun getAllFacilityUnits(): List<FacilityUnitDto> {
-        return facilityUnitService.findAll()
+    fun getAllFacilityUnits(
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ): List<FacilityUnitDto> {
+        return facilityUnitService.findAll(all)
     }
 
     @POST

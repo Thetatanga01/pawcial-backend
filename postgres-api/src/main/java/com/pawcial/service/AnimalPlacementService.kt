@@ -13,8 +13,8 @@ import java.util.*
 @ApplicationScoped
 class AnimalPlacementService {
 
-    fun findAll(animalId: UUID?, personId: UUID?): List<AnimalPlacement> {
-        var query = "1=1"
+    fun findAll(animalId: UUID?, personId: UUID?, all: Boolean = false): List<AnimalPlacement> {
+        var query = if (all) "1=1" else "isActive = true"
         val params = mutableMapOf<String, Any>()
 
         if (animalId != null) {
@@ -70,10 +70,10 @@ class AnimalPlacementService {
 
     @Transactional
     fun delete(id: UUID) {
-        val deleted = AnimalPlacement.deleteById(id)
-        if (!deleted) {
-            throw NotFoundException("AnimalPlacement not found: $id")
-        }
+        val placement = AnimalPlacement.findById(id)
+            ?: throw NotFoundException("AnimalPlacement not found: $id")
+        placement.isActive = false
+        placement.persist()
     }
 }
 

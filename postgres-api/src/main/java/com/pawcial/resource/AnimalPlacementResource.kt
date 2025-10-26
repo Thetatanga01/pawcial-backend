@@ -19,8 +19,9 @@ class AnimalPlacementResource {
     @GET
     fun getAllPlacements(
         @QueryParam("animalId") animalId: UUID?,
-        @QueryParam("personId") personId: UUID?
-    ) = animalPlacementService.findAll(animalId, personId)
+        @QueryParam("personId") personId: UUID?,
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ) = animalPlacementService.findAll(animalId, personId, all)
 
     @GET
     @Path("/{id}")

@@ -24,10 +24,13 @@ class SpeciesResource {
     lateinit var speciesService: SpeciesService
 
     @GET
-    @Operation(summary = "Tüm türleri listele")
+    @Operation(summary = "Tüm türleri listele", description = "Aktif veya tüm türleri getirir")
     @APIResponse(responseCode = "200", description = "Başarılı")
-    fun getAllSpecies(): List<SpeciesDto> {
-        return speciesService.findAll()
+    fun getAllSpecies(
+        @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ): List<SpeciesDto> {
+        return speciesService.findAll(all)
     }
 
     @GET

@@ -12,11 +12,16 @@ import java.util.*
 @ApplicationScoped
 class CoreVolunteerAreaService {
 
-    fun findAll(volunteerId: UUID?): List<VolunteerArea> {
+    fun findAll(volunteerId: UUID?, all: Boolean = false): List<VolunteerArea> {
+        val activeFilter = if (all) "" else " and isActive = true"
         return if (volunteerId != null) {
-            VolunteerArea.find("volunteer.id", volunteerId).list()
+            VolunteerArea.find("volunteer.id = ?1$activeFilter", volunteerId).list()
         } else {
-            VolunteerArea.findAll().list()
+            if (all) {
+                VolunteerArea.findAll().list()
+            } else {
+                VolunteerArea.find("isActive = true").list()
+            }
         }
     }
 
@@ -43,9 +48,9 @@ class CoreVolunteerAreaService {
     @Transactional
     fun delete(volunteerId: UUID, areaCode: String) {
         val id = VolunteerAreaId(volunteerId, areaCode)
-        val deleted = VolunteerArea.deleteById(id)
-        if (!deleted) {
-            throw NotFoundException("VolunteerArea not found for volunteer: $volunteerId and area: $areaCode")
-        }
+        val volunteerArea = VolunteerArea.findById(id)
+            ?: throw NotFoundException("VolunteerArea not found for volunteer: $volunteerId and area: $areaCode")
+        volunteerArea.isActive = false
+        volunteerArea.persist()
     }
 }

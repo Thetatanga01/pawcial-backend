@@ -17,7 +17,10 @@ class AssetServiceResource {
     lateinit var assetServiceService: AssetServiceService
 
     @GET
-    fun getAllServices(@QueryParam("assetId") assetId: UUID?) = assetServiceService.findAll(assetId)
+    fun getAllServices(
+        @QueryParam("assetId") assetId: UUID?,
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ) = assetServiceService.findAll(assetId, all)
 
     @GET
     @Path("/{id}")

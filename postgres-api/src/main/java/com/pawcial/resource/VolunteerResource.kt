@@ -24,10 +24,13 @@ class VolunteerResource {
     lateinit var volunteerService: VolunteerService
 
     @GET
-    @Operation(summary = "Tüm gönüllüleri listele")
+    @Operation(summary = "Tüm gönüllüleri listele", description = "Aktif veya tüm gönüllüleri getirir")
     @APIResponse(responseCode = "200", description = "Başarılı")
-    fun getAllVolunteers(): List<VolunteerDto> {
-        return volunteerService.findAll()
+    fun getAllVolunteers(
+        @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ): List<VolunteerDto> {
+        return volunteerService.findAll(all)
     }
 
     @GET

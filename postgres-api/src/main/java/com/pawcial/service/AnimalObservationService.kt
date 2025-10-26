@@ -13,11 +13,16 @@ import java.util.*
 @ApplicationScoped
 class AnimalObservationService {
 
-    fun findAll(animalId: UUID?): List<AnimalObservation> {
+    fun findAll(animalId: UUID?, all: Boolean = false): List<AnimalObservation> {
+        val activeFilter = if (all) "" else " and isActive = true"
         return if (animalId != null) {
-            AnimalObservation.find("animal.id", animalId).list()
+            AnimalObservation.find("animal.id = ?1$activeFilter", animalId).list()
         } else {
-            AnimalObservation.findAll().list()
+            if (all) {
+                AnimalObservation.findAll().list()
+            } else {
+                AnimalObservation.find("isActive = true").list()
+            }
         }
     }
 
@@ -56,10 +61,10 @@ class AnimalObservationService {
 
     @Transactional
     fun delete(id: UUID) {
-        val deleted = AnimalObservation.deleteById(id)
-        if (!deleted) {
-            throw NotFoundException("AnimalObservation not found: $id")
-        }
+        val observation = AnimalObservation.findById(id)
+            ?: throw NotFoundException("AnimalObservation not found: $id")
+        observation.isActive = false
+        observation.persist()
     }
 }
 

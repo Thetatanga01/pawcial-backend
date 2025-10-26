@@ -13,9 +13,12 @@ import jakarta.ws.rs.NotFoundException
 @ApplicationScoped
 class FacilityUnitService {
 
-    fun findAll(): List<FacilityUnitDto> {
-        return FacilityUnit.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<FacilityUnitDto> {
+        return if (all) {
+            FacilityUnit.findAll().list().map { it.toDto() }
+        } else {
+            FacilityUnit.find("isActive = true").list().map { it.toDto() }
+        }
     }
 
     @Transactional

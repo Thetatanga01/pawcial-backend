@@ -17,7 +17,10 @@ class AnimalBreedCompositionResource {
     lateinit var animalBreedCompositionService: AnimalBreedCompositionService
 
     @GET
-    fun getAllCompositions(@QueryParam("animalId") animalId: UUID?) = animalBreedCompositionService.findAll(animalId)
+    fun getAllCompositions(
+        @QueryParam("animalId") animalId: UUID?,
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ) = animalBreedCompositionService.findAll(animalId, all)
 
     @GET
     @Path("/{animalId}/{breedId}")

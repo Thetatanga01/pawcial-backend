@@ -24,10 +24,13 @@ class PersonResource {
     lateinit var personService: PersonService
 
     @GET
-    @Operation(summary = "Tüm kişileri listele")
+    @Operation(summary = "Tüm kişileri listele", description = "Aktif veya tüm kişileri getirir")
     @APIResponse(responseCode = "200", description = "Başarılı")
-    fun getAllPersons(): List<PersonDto> {
-        return personService.findAll()
+    fun getAllPersons(
+        @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ): List<PersonDto> {
+        return personService.findAll(all)
     }
 
     @GET

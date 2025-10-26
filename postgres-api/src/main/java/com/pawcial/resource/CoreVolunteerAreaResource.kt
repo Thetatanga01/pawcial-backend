@@ -17,7 +17,10 @@ class CoreVolunteerAreaResource {
     lateinit var coreVolunteerAreaService: CoreVolunteerAreaService
 
     @GET
-    fun getAllVolunteerAreas(@QueryParam("volunteerId") volunteerId: UUID?) = coreVolunteerAreaService.findAll(volunteerId)
+    fun getAllVolunteerAreas(
+        @QueryParam("volunteerId") volunteerId: UUID?,
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ) = coreVolunteerAreaService.findAll(volunteerId, all)
 
     @GET
     @Path("/{volunteerId}/{areaCode}")

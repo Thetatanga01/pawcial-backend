@@ -24,10 +24,13 @@ class FacilityResource {
     lateinit var facilityService: FacilityService
 
     @GET
-    @Operation(summary = "Tüm tesisleri listele")
+    @Operation(summary = "Tüm tesisleri listele", description = "Aktif veya tüm tesisleri getirir")
     @APIResponse(responseCode = "200", description = "Başarılı")
-    fun getAllFacilities(): List<FacilityDto> {
-        return facilityService.findAll()
+    fun getAllFacilities(
+        @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ): List<FacilityDto> {
+        return facilityService.findAll(all)
     }
 
     @GET

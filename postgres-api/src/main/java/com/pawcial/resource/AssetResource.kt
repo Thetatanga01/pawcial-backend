@@ -24,10 +24,13 @@ class AssetResource {
     lateinit var assetService: AssetService
 
     @GET
-    @Operation(summary = "Tüm varlıkları listele")
+    @Operation(summary = "Tüm varlıkları listele", description = "Aktif veya tüm varlıkları getirir")
     @APIResponse(responseCode = "200", description = "Başarılı")
-    fun getAllAssets(): List<AssetDto> {
-        return assetService.findAll()
+    fun getAllAssets(
+        @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ): List<AssetDto> {
+        return assetService.findAll(all)
     }
 
     @GET

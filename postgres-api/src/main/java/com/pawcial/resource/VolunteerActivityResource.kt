@@ -17,7 +17,10 @@ class VolunteerActivityResource {
     lateinit var volunteerActivityService: VolunteerActivityService
 
     @GET
-    fun getAllActivities(@QueryParam("volunteerId") volunteerId: UUID?) = volunteerActivityService.findAll(volunteerId)
+    fun getAllActivities(
+        @QueryParam("volunteerId") volunteerId: UUID?,
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ) = volunteerActivityService.findAll(volunteerId, all)
 
     @GET
     @Path("/{id}")

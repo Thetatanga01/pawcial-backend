@@ -13,9 +13,12 @@ import java.util.*
 @ApplicationScoped
 class SpeciesService {
 
-    fun findAll(): List<SpeciesDto> {
-        return Species.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<SpeciesDto> {
+        return if (all) {
+            Species.findAll().list().map { it.toDto() }
+        } else {
+            Species.find("isActive = true").list().map { it.toDto() }
+        }
     }
 
     fun findById(id: UUID): SpeciesDto {
@@ -50,9 +53,9 @@ class SpeciesService {
 
     @Transactional
     fun delete(id: UUID) {
-        val deleted = Species.deleteById(id)
-        if (!deleted) {
-            throw NotFoundException("Species not found: $id")
-        }
+        val species = Species.findById(id)
+            ?: throw NotFoundException("Species not found: $id")
+        species.isActive = false
+        species.persist()
     }
 }

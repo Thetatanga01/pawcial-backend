@@ -14,9 +14,12 @@ import java.util.*
 @ApplicationScoped
 class FacilityZoneService {
 
-    fun findAll(): List<FacilityZoneDto> {
-        return FacilityZone.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<FacilityZoneDto> {
+        return if (all) {
+            FacilityZone.findAll().list().map { it.toDto() }
+        } else {
+            FacilityZone.find("isActive = true").list().map { it.toDto() }
+        }
     }
 
     fun findById(id: UUID): FacilityZoneDto {
@@ -58,9 +61,9 @@ class FacilityZoneService {
 
     @Transactional
     fun delete(id: UUID) {
-        val deleted = FacilityZone.deleteById(id)
-        if (!deleted) {
-            throw NotFoundException("FacilityZone not found: $id")
-        }
+        val zone = FacilityZone.findById(id)
+            ?: throw NotFoundException("FacilityZone not found: $id")
+        zone.isActive = false
+        zone.persist()
     }
 }

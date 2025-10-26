@@ -17,7 +17,10 @@ class AnimalEventResource {
     lateinit var animalEventService: AnimalEventService
 
     @GET
-    fun getAllEvents(@QueryParam("animalId") animalId: UUID?) = animalEventService.findAll(animalId)
+    fun getAllEvents(
+        @QueryParam("animalId") animalId: UUID?,
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ) = animalEventService.findAll(animalId, all)
 
     @GET
     @Path("/{id}")

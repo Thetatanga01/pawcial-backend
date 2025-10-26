@@ -19,9 +19,10 @@ class AnimalResource {
     @GET
     fun getAllAnimals(
         @QueryParam("species") speciesId: UUID?,
-        @QueryParam("status") status: String?
+        @QueryParam("status") status: String?,
+        @QueryParam("all") @DefaultValue("false") all: Boolean
     ): List<AnimalDto> {
-        return animalService.findAll(speciesId, status)
+        return animalService.findAll(speciesId, status, all)
     }
 
     @GET

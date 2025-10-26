@@ -15,9 +15,12 @@ import java.util.*
 @ApplicationScoped
 class AssetService {
 
-    fun findAll(): List<AssetDto> {
-        return Asset.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<AssetDto> {
+        return if (all) {
+            Asset.findAll().list().map { it.toDto() }
+        } else {
+            Asset.find("isActive = true").list().map { it.toDto() }
+        }
     }
 
     fun findById(id: UUID): AssetDto {
@@ -80,9 +83,9 @@ class AssetService {
 
     @Transactional
     fun delete(id: UUID) {
-        val deleted = Asset.deleteById(id)
-        if (!deleted) {
-            throw NotFoundException("Asset not found: $id")
-        }
+        val asset = Asset.findById(id)
+            ?: throw NotFoundException("Asset not found: $id")
+        asset.isActive = false
+        asset.persist()
     }
 }

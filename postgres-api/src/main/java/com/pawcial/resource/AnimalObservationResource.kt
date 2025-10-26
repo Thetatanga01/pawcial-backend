@@ -17,7 +17,10 @@ class AnimalObservationResource {
     lateinit var animalObservationService: AnimalObservationService
 
     @GET
-    fun getAllObservations(@QueryParam("animalId") animalId: UUID?) = animalObservationService.findAll(animalId)
+    fun getAllObservations(
+        @QueryParam("animalId") animalId: UUID?,
+        @QueryParam("all") @DefaultValue("false") all: Boolean
+    ) = animalObservationService.findAll(animalId, all)
 
     @GET
     @Path("/{id}")

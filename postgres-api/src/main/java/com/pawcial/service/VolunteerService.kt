@@ -14,9 +14,12 @@ import java.util.*
 @ApplicationScoped
 class VolunteerService {
 
-    fun findAll(): List<VolunteerDto> {
-        return Volunteer.findAll().list()
-            .map { it.toDto() }
+    fun findAll(all: Boolean = false): List<VolunteerDto> {
+        return if (all) {
+            Volunteer.findAll().list().map { it.toDto() }
+        } else {
+            Volunteer.find("isActive = true").list().map { it.toDto() }
+        }
     }
 
     fun findById(id: UUID): VolunteerDto {
@@ -64,9 +67,9 @@ class VolunteerService {
 
     @Transactional
     fun delete(id: UUID) {
-        val deleted = Volunteer.deleteById(id)
-        if (!deleted) {
-            throw NotFoundException("Volunteer not found: $id")
-        }
+        val volunteer = Volunteer.findById(id)
+            ?: throw NotFoundException("Volunteer not found: $id")
+        volunteer.isActive = false
+        volunteer.persist()
     }
 }
