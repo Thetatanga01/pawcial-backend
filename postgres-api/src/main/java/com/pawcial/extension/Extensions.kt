@@ -89,10 +89,22 @@ fun Asset.toDto() = AssetDto(
 // Animal extension (existing)
 fun Animal.toDto() = AnimalDto(
     id = this.id,
+    speciesId = this.species?.id,
+    speciesName = this.species?.commonName,
+    breedId = this.breed?.id,
+    breedName = this.breed?.name,
     name = this.name,
     sex = this.sex,
-    speciesName = this.species?.commonName,
-    breedName = this.breed?.name
+    birthDate = this.birthDate,
+    ageMonthsEst = this.ageMonthsEst,
+    size = this.size,
+    color = this.color,
+    trainingLevel = this.trainingLevel,
+    sterilized = this.sterilized,
+    isMixed = this.isMixed,
+    originNote = this.originNote,
+    currentUnitId = this.currentUnitId,
+    currentSince = this.currentSince
 )
 
 // Dictionary entities extensions

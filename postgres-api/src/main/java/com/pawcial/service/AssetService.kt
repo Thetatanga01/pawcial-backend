@@ -2,6 +2,7 @@ package com.pawcial.service
 
 import com.pawcial.dto.AssetDto
 import com.pawcial.dto.CreateAssetRequest
+import com.pawcial.dto.UpdateAssetRequest
 import com.pawcial.entity.core.Asset
 import com.pawcial.entity.core.Facility
 import com.pawcial.entity.core.FacilityUnit
@@ -9,6 +10,7 @@ import com.pawcial.extension.toDto
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
+import java.util.*
 
 @ApplicationScoped
 class AssetService {
@@ -16,6 +18,11 @@ class AssetService {
     fun findAll(): List<AssetDto> {
         return Asset.findAll().list()
             .map { it.toDto() }
+    }
+
+    fun findById(id: UUID): AssetDto {
+        return Asset.findById(id)?.toDto()
+            ?: throw NotFoundException("Asset not found: $id")
     }
 
     @Transactional
@@ -42,6 +49,40 @@ class AssetService {
         asset.persist()
         return asset.toDto()
     }
+
+    @Transactional
+    fun update(id: UUID, request: UpdateAssetRequest): AssetDto {
+        val asset = Asset.findById(id)
+            ?: throw NotFoundException("Asset not found: $id")
+
+        request.facilityId?.let {
+            asset.facility = Facility.findById(it)
+                ?: throw NotFoundException("Facility not found: $it")
+        }
+
+        request.unitId?.let {
+            asset.unit = FacilityUnit.findById(it)
+                ?: throw NotFoundException("FacilityUnit not found: $it")
+        }
+
+        asset.apply {
+            request.code?.let { code = it }
+            request.name?.let { name = it }
+            request.type?.let { type = it }
+            request.serialNo?.let { serialNo = it }
+            request.purchaseDate?.let { purchaseDate = it }
+            request.warrantyEnd?.let { warrantyEnd = it }
+            request.status?.let { status = it }
+        }
+        asset.persist()
+        return asset.toDto()
+    }
+
+    @Transactional
+    fun delete(id: UUID) {
+        val deleted = Asset.deleteById(id)
+        if (!deleted) {
+            throw NotFoundException("Asset not found: $id")
+        }
+    }
 }
-
-

@@ -93,6 +93,7 @@ class AnimalService {
             request.currentUnitId?.let { currentUnitId = it }
             request.currentSince?.let { currentSince = it }
         }
+        animal.persist()
         return animal.toDto()
     }
 

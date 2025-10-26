@@ -1,6 +1,7 @@
 package com.pawcial.service
 
 import com.pawcial.dto.CreateVolunteerRequest
+import com.pawcial.dto.UpdateVolunteerRequest
 import com.pawcial.dto.VolunteerDto
 import com.pawcial.entity.core.Person
 import com.pawcial.entity.core.Volunteer
@@ -16,6 +17,11 @@ class VolunteerService {
     fun findAll(): List<VolunteerDto> {
         return Volunteer.findAll().list()
             .map { it.toDto() }
+    }
+
+    fun findById(id: UUID): VolunteerDto {
+        return Volunteer.findById(id)?.toDto()
+            ?: throw NotFoundException("Volunteer not found: $id")
     }
 
     @Transactional
@@ -34,5 +40,33 @@ class VolunteerService {
         volunteer.persist()
         return volunteer.toDto()
     }
-}
 
+    @Transactional
+    fun update(id: UUID, request: UpdateVolunteerRequest): VolunteerDto {
+        val volunteer = Volunteer.findById(id)
+            ?: throw NotFoundException("Volunteer not found: $id")
+
+        request.personId?.let {
+            volunteer.person = Person.findById(it)
+                ?: throw NotFoundException("Person not found: $it")
+        }
+
+        volunteer.apply {
+            request.status?.let { status = it }
+            request.startDate?.let { startDate = it }
+            request.endDate?.let { endDate = it }
+            request.volunteerCode?.let { volunteerCode = it }
+            request.notes?.let { notes = it }
+        }
+        volunteer.persist()
+        return volunteer.toDto()
+    }
+
+    @Transactional
+    fun delete(id: UUID) {
+        val deleted = Volunteer.deleteById(id)
+        if (!deleted) {
+            throw NotFoundException("Volunteer not found: $id")
+        }
+    }
+}
