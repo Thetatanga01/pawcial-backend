@@ -18,5 +18,7 @@ data class CreateAnimalRequest(
     val isMixed: Boolean = false,
     val originNote: String?,
     val currentUnitId: UUID?,
-    val currentSince: OffsetDateTime?
+    val currentSince: OffsetDateTime?,
+    val temperamentCodes: List<String>? = null,
+    val healthFlagCodes: List<String>? = null
 )

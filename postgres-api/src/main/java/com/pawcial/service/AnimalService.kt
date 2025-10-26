@@ -3,12 +3,20 @@ import com.pawcial.dto.*
 import com.pawcial.entity.core.Animal
 import com.pawcial.extension.toDto
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.persistence.EntityManager
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
+import org.jboss.logging.Logger
 import java.util.*
 
 @ApplicationScoped
 class AnimalService {
+
+    @Inject
+    lateinit var entityManager: EntityManager
+
+    private val log = Logger.getLogger(AnimalService::class.java)
 
     fun findAll(speciesId: UUID?, status: String?): List<AnimalDto> {
         var query = "1=1"
@@ -60,7 +68,31 @@ class AnimalService {
             currentUnitId = request.currentUnitId
             currentSince = request.currentSince
         }
+
+        // Handle temperaments
+        log.info("Processing temperamentCodes: ${request.temperamentCodes}")
+        request.temperamentCodes?.forEach { code ->
+            log.info("Adding temperament: $code")
+            val temperament = com.pawcial.entity.dictionary.Temperament.findById(code)
+                ?: throw NotFoundException("Temperament not found: $code")
+            animal.temperaments.add(temperament)
+        }
+        log.info("Total temperaments added: ${animal.temperaments.size}")
+
+        // Handle health flags
+        log.info("Processing healthFlagCodes: ${request.healthFlagCodes}")
+        request.healthFlagCodes?.forEach { code ->
+            log.info("Adding health flag: $code")
+            val healthFlag = com.pawcial.entity.dictionary.HealthFlag.findById(code)
+                ?: throw NotFoundException("HealthFlag not found: $code")
+            animal.healthFlags.add(healthFlag)
+        }
+        log.info("Total health flags added: ${animal.healthFlags.size}")
+
         animal.persist()
+        log.info("Animal persisted with ID: ${animal.id}")
+        entityManager.flush()
+        log.info("EntityManager flushed")
         return animal.toDto()
     }
 
@@ -79,6 +111,27 @@ class AnimalService {
                 ?: throw NotFoundException("Breed not found: $it")
         }
 
+        // Handle temperaments update
+        request.temperamentCodes?.let { codes ->
+            animal.temperaments.clear()
+            codes.forEach { code ->
+                val temperament = com.pawcial.entity.dictionary.Temperament.findById(code)
+                    ?: throw NotFoundException("Temperament not found: $code")
+                animal.temperaments.add(temperament)
+            }
+        }
+
+        // Handle health flags update
+        request.healthFlagCodes?.let { codes ->
+            animal.healthFlags.clear()
+            codes.forEach { code ->
+                val healthFlag = com.pawcial.entity.dictionary.HealthFlag.findById(code)
+                    ?: throw NotFoundException("HealthFlag not found: $code")
+                animal.healthFlags.add(healthFlag)
+            }
+        }
+
+
         animal.apply {
             request.name?.let { name = it }
             request.sex?.let { sex = it }
@@ -94,6 +147,7 @@ class AnimalService {
             request.currentSince?.let { currentSince = it }
         }
         animal.persist()
+        entityManager.flush()
         return animal.toDto()
     }
 

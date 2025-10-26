@@ -61,7 +61,7 @@ class Animal : BaseEntity() {
     @OneToMany(mappedBy = "animal", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var breedCompositions: MutableList<AnimalBreedComposition> = mutableListOf()
 
-    @ManyToMany
+    @ManyToMany(cascade = [CascadeType.PERSIST, CascadeType.MERGE], fetch = FetchType.EAGER)
     @JoinTable(
         name = "animal_temperament",
         schema = "pawcial",
@@ -70,7 +70,7 @@ class Animal : BaseEntity() {
     )
     var temperaments: MutableSet<Temperament> = mutableSetOf()
 
-    @ManyToMany
+    @ManyToMany(cascade = [CascadeType.PERSIST, CascadeType.MERGE], fetch = FetchType.EAGER)
     @JoinTable(
         name = "animal_health_flag",
         schema = "pawcial",

@@ -18,5 +18,7 @@ data class UpdateAnimalRequest(
     val isMixed: Boolean?,
     val originNote: String?,
     val currentUnitId: UUID?,
-    val currentSince: OffsetDateTime?
+    val currentSince: OffsetDateTime?,
+    val temperamentCodes: List<String>?,
+    val healthFlagCodes: List<String>?
 )

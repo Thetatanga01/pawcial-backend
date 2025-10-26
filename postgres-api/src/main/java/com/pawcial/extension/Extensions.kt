@@ -104,7 +104,9 @@ fun Animal.toDto() = AnimalDto(
     isMixed = this.isMixed,
     originNote = this.originNote,
     currentUnitId = this.currentUnitId,
-    currentSince = this.currentSince
+    currentSince = this.currentSince,
+    temperaments = this.temperaments.map { it.code ?: "" },
+    healthFlags = this.healthFlags.map { it.code ?: "" }
 )
 
 // Dictionary entities extensions

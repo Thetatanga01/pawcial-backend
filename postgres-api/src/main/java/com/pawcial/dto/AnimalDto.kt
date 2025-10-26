@@ -21,7 +21,9 @@ data class AnimalDto(
     val isMixed: Boolean?,
     val originNote: String?,
     val currentUnitId: UUID?,
-    val currentSince: OffsetDateTime?
+    val currentSince: OffsetDateTime?,
+    val temperaments: List<String>?,
+    val healthFlags: List<String>?
 )
 
 
