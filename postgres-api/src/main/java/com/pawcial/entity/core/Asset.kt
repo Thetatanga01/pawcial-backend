@@ -8,9 +8,7 @@ import java.util.*
 
 
 @Entity
-@Table(name = "asset", schema = "pawcial", uniqueConstraints = [
-    UniqueConstraint(columnNames = ["facility_id", "code"])
-])
+@Table(name = "asset", schema = "pawcial")
 class Asset : BaseEntity() {
 
     companion object : PanacheCompanionBase<Asset, UUID>

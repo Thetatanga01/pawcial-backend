@@ -6,9 +6,7 @@ import jakarta.persistence.*
 import java.util.*
 
 @Entity
-@Table(name = "facility_zone", schema = "pawcial", uniqueConstraints = [
-    UniqueConstraint(columnNames = ["facility_id", "name"])
-])
+@Table(name = "facility_zone", schema = "pawcial")
 class FacilityZone : BaseEntity() {
 
     companion object : PanacheCompanionBase<FacilityZone, UUID>

@@ -35,6 +35,12 @@ quarkus:
     default-schema: pawcial             # Default schema
     create-schemas: true                # Schema yoksa oluştur
 
+  # Hibernate Configuration
+  hibernate-orm:
+    database:
+      generation: none                  # Hibernate'in DDL işlemleri yapmamasını sağla (Flyway kullanıyoruz)
+    validate-in-dev-mode: false         # Dev mode'da schema validation yapma
+
   # HTTP Configuration
   http:
     port: 8000
