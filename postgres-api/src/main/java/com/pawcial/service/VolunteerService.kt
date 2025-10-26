@@ -1,6 +1,7 @@
 package com.pawcial.service
 
 import com.pawcial.dto.CreateVolunteerRequest
+import com.pawcial.dto.PagedResponse
 import com.pawcial.dto.UpdateVolunteerRequest
 import com.pawcial.dto.VolunteerDto
 import com.pawcial.entity.core.Person
@@ -14,12 +15,71 @@ import java.util.*
 @ApplicationScoped
 class VolunteerService {
 
-    fun findAll(all: Boolean = false): List<VolunteerDto> {
-        return if (all) {
-            Volunteer.findAll().list().map { it.toDto() }
+    fun findAll(all: Boolean = false, page: Int = 0, size: Int = 20): PagedResponse<VolunteerDto> {
+        val query = if (all) "1=1" else "isActive = true"
+
+        // Get total count
+        val totalElements = Volunteer.count(query)
+
+        // Get paginated results
+        val content = if (all) {
+            Volunteer.findAll().page(page, size).list().map { it.toDto() }
         } else {
-            Volunteer.find("isActive = true").list().map { it.toDto() }
+            Volunteer.find("isActive = true").page(page, size).list().map { it.toDto() }
         }
+
+        val totalPages = ((totalElements + size - 1) / size).toInt()
+
+        return PagedResponse(
+            content = content,
+            page = page,
+            size = size,
+            totalElements = totalElements,
+            totalPages = totalPages,
+            hasNext = page < totalPages - 1,
+            hasPrevious = page > 0
+        )
+    }
+
+    fun search(personName: String?, status: String?, volunteerCode: String?, all: Boolean = false, page: Int = 0, size: Int = 20): PagedResponse<VolunteerDto> {
+        var query = if (all) "1=1" else "isActive = true"
+        val params = mutableMapOf<String, Any>()
+
+        if (!personName.isNullOrBlank()) {
+            query += " and lower(person.fullName) like lower(:personName)"
+            params["personName"] = "%$personName%"
+        }
+
+        if (!status.isNullOrBlank()) {
+            query += " and lower(status) like lower(:status)"
+            params["status"] = "%$status%"
+        }
+
+        if (!volunteerCode.isNullOrBlank()) {
+            query += " and lower(volunteerCode) like lower(:volunteerCode)"
+            params["volunteerCode"] = "%$volunteerCode%"
+        }
+
+        // Get total count
+        val totalElements = Volunteer.count(query, params)
+
+        // Get paginated results
+        val content = Volunteer.find(query, params)
+            .page(page, size)
+            .list()
+            .map { it.toDto() }
+
+        val totalPages = ((totalElements + size - 1) / size).toInt()
+
+        return PagedResponse(
+            content = content,
+            page = page,
+            size = size,
+            totalElements = totalElements,
+            totalPages = totalPages,
+            hasNext = page < totalPages - 1,
+            hasPrevious = page > 0
+        )
     }
 
     fun findById(id: UUID): VolunteerDto {

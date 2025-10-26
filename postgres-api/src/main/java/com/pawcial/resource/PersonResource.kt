@@ -1,6 +1,7 @@
 package com.pawcial.resource
 
 import com.pawcial.dto.CreatePersonRequest
+import com.pawcial.dto.PagedResponse
 import com.pawcial.dto.PersonDto
 import com.pawcial.dto.UpdatePersonRequest
 import com.pawcial.service.PersonService
@@ -24,13 +25,38 @@ class PersonResource {
     lateinit var personService: PersonService
 
     @GET
-    @Operation(summary = "Tüm kişileri listele", description = "Aktif veya tüm kişileri getirir")
+    @Operation(summary = "Tüm kişileri listele", description = "Aktif veya tüm kişileri getirir (sayfalama ile)")
     @APIResponse(responseCode = "200", description = "Başarılı")
     fun getAllPersons(
         @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
-        @QueryParam("all") @DefaultValue("false") all: Boolean
-    ): List<PersonDto> {
-        return personService.findAll(all)
+        @QueryParam("all") @DefaultValue("false") all: Boolean,
+        @Parameter(description = "Sayfa numarası (0'dan başlar)")
+        @QueryParam("page") @DefaultValue("0") page: Int,
+        @Parameter(description = "Sayfa boyutu")
+        @QueryParam("size") @DefaultValue("20") size: Int
+    ): PagedResponse<PersonDto> {
+        return personService.findAll(all, page, size)
+    }
+
+    @GET
+    @Path("/search")
+    @Operation(summary = "Kişilerde ara", description = "İsim, telefon veya email'e göre arama")
+    @APIResponse(responseCode = "200", description = "Başarılı")
+    fun searchPersons(
+        @Parameter(description = "İsim ile arama")
+        @QueryParam("fullName") fullName: String?,
+        @Parameter(description = "Telefon ile arama")
+        @QueryParam("phone") phone: String?,
+        @Parameter(description = "Email ile arama")
+        @QueryParam("email") email: String?,
+        @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
+        @QueryParam("all") @DefaultValue("false") all: Boolean,
+        @Parameter(description = "Sayfa numarası (0'dan başlar)")
+        @QueryParam("page") @DefaultValue("0") page: Int,
+        @Parameter(description = "Sayfa boyutu")
+        @QueryParam("size") @DefaultValue("20") size: Int
+    ): PagedResponse<PersonDto> {
+        return personService.search(fullName, phone, email, all, page, size)
     }
 
     @GET
