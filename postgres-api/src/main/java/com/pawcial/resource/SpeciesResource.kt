@@ -1,6 +1,7 @@
 package com.pawcial.resource
 
 import com.pawcial.dto.CreateSpeciesRequest
+import com.pawcial.dto.PagedResponse
 import com.pawcial.dto.SpeciesDto
 import com.pawcial.dto.UpdateSpeciesRequest
 import com.pawcial.service.SpeciesService
@@ -24,13 +25,36 @@ class SpeciesResource {
     lateinit var speciesService: SpeciesService
 
     @GET
-    @Operation(summary = "Tüm türleri listele", description = "Aktif veya tüm türleri getirir")
+    @Operation(summary = "Tüm türleri listele", description = "Aktif veya tüm türleri getirir (sayfalama ile)")
     @APIResponse(responseCode = "200", description = "Başarılı")
     fun getAllSpecies(
         @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
-        @QueryParam("all") @DefaultValue("false") all: Boolean
-    ): List<SpeciesDto> {
-        return speciesService.findAll(all)
+        @QueryParam("all") @DefaultValue("false") all: Boolean,
+        @Parameter(description = "Sayfa numarası (0'dan başlar)")
+        @QueryParam("page") @DefaultValue("0") page: Int,
+        @Parameter(description = "Sayfa boyutu")
+        @QueryParam("size") @DefaultValue("20") size: Int
+    ): PagedResponse<SpeciesDto> {
+        return speciesService.findAll(all, page, size)
+    }
+
+    @GET
+    @Path("/search")
+    @Operation(summary = "Türlerde ara", description = "Bilimsel veya yaygın isimle arama")
+    @APIResponse(responseCode = "200", description = "Başarılı")
+    fun searchSpecies(
+        @Parameter(description = "Bilimsel isim ile arama")
+        @QueryParam("scientificName") scientificName: String?,
+        @Parameter(description = "Yaygın isim ile arama")
+        @QueryParam("commonName") commonName: String?,
+        @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
+        @QueryParam("all") @DefaultValue("false") all: Boolean,
+        @Parameter(description = "Sayfa numarası (0'dan başlar)")
+        @QueryParam("page") @DefaultValue("0") page: Int,
+        @Parameter(description = "Sayfa boyutu")
+        @QueryParam("size") @DefaultValue("20") size: Int
+    ): PagedResponse<SpeciesDto> {
+        return speciesService.search(scientificName, commonName, all, page, size)
     }
 
     @GET

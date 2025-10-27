@@ -2,6 +2,7 @@ package com.pawcial.resource
 
 import com.pawcial.dto.BreedDto
 import com.pawcial.dto.CreateBreedRequest
+import com.pawcial.dto.PagedResponse
 import com.pawcial.dto.UpdateBreedRequest
 import com.pawcial.service.BreedService
 import jakarta.inject.Inject
@@ -24,13 +25,38 @@ class BreedResource {
     lateinit var breedService: BreedService
 
     @GET
-    @Operation(summary = "Tüm ırkları listele", description = "Aktif veya tüm ırkları getirir")
+    @Operation(summary = "Tüm ırkları listele", description = "Aktif veya tüm ırkları getirir (sayfalama ile)")
     @APIResponse(responseCode = "200", description = "Başarılı")
     fun getAllBreeds(
+        @Parameter(description = "Türe göre filtrele")
+        @QueryParam("species") speciesId: UUID?,
         @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
-        @QueryParam("all") @DefaultValue("false") all: Boolean
-    ): List<BreedDto> {
-        return breedService.findAll(all)
+        @QueryParam("all") @DefaultValue("false") all: Boolean,
+        @Parameter(description = "Sayfa numarası (0'dan başlar)")
+        @QueryParam("page") @DefaultValue("0") page: Int,
+        @Parameter(description = "Sayfa boyutu")
+        @QueryParam("size") @DefaultValue("20") size: Int
+    ): PagedResponse<BreedDto> {
+        return breedService.findAll(speciesId, all, page, size)
+    }
+
+    @GET
+    @Path("/search")
+    @Operation(summary = "Irklarda ara", description = "Irk ismi veya tür ismi ile arama")
+    @APIResponse(responseCode = "200", description = "Başarılı")
+    fun searchBreeds(
+        @Parameter(description = "Irk ismi ile arama")
+        @QueryParam("name") name: String?,
+        @Parameter(description = "Tür ismi ile arama")
+        @QueryParam("speciesName") speciesName: String?,
+        @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
+        @QueryParam("all") @DefaultValue("false") all: Boolean,
+        @Parameter(description = "Sayfa numarası (0'dan başlar)")
+        @QueryParam("page") @DefaultValue("0") page: Int,
+        @Parameter(description = "Sayfa boyutu")
+        @QueryParam("size") @DefaultValue("20") size: Int
+    ): PagedResponse<BreedDto> {
+        return breedService.search(name, speciesName, all, page, size)
     }
 
     @GET

@@ -2,6 +2,7 @@ package com.pawcial.service
 
 import com.pawcial.dto.BreedDto
 import com.pawcial.dto.CreateBreedRequest
+import com.pawcial.dto.PagedResponse
 import com.pawcial.dto.UpdateBreedRequest
 import com.pawcial.entity.core.Breed
 import com.pawcial.entity.core.Species
@@ -14,12 +15,67 @@ import java.util.*
 @ApplicationScoped
 class BreedService {
 
-    fun findAll(all: Boolean = false): List<BreedDto> {
-        return if (all) {
-            Breed.findAll().list().map { it.toDto() }
-        } else {
-            Breed.find("isActive = true").list().map { it.toDto() }
+    fun findAll(speciesId: UUID?, all: Boolean = false, page: Int = 0, size: Int = 20): PagedResponse<BreedDto> {
+        var query = if (all) "1=1" else "isActive = true"
+        val params = mutableMapOf<String, Any>()
+
+        if (speciesId != null) {
+            query += " and species.id = :speciesId"
+            params["speciesId"] = speciesId
         }
+
+        val totalElements = Breed.count(query, params)
+
+        val content = Breed.find(query, params)
+            .page(page, size)
+            .list()
+            .map { it.toDto() }
+
+        val totalPages = ((totalElements + size - 1) / size).toInt()
+
+        return PagedResponse(
+            content = content,
+            page = page,
+            size = size,
+            totalElements = totalElements,
+            totalPages = totalPages,
+            hasNext = page < totalPages - 1,
+            hasPrevious = page > 0
+        )
+    }
+
+    fun search(name: String?, speciesName: String?, all: Boolean = false, page: Int = 0, size: Int = 20): PagedResponse<BreedDto> {
+        var query = if (all) "1=1" else "isActive = true"
+        val params = mutableMapOf<String, Any>()
+
+        if (!name.isNullOrBlank()) {
+            query += " and lower(name) like lower(:name)"
+            params["name"] = "%$name%"
+        }
+
+        if (!speciesName.isNullOrBlank()) {
+            query += " and lower(species.commonName) like lower(:speciesName)"
+            params["speciesName"] = "%$speciesName%"
+        }
+
+        val totalElements = Breed.count(query, params)
+
+        val content = Breed.find(query, params)
+            .page(page, size)
+            .list()
+            .map { it.toDto() }
+
+        val totalPages = ((totalElements + size - 1) / size).toInt()
+
+        return PagedResponse(
+            content = content,
+            page = page,
+            size = size,
+            totalElements = totalElements,
+            totalPages = totalPages,
+            hasNext = page < totalPages - 1,
+            hasPrevious = page > 0
+        )
     }
 
     fun findById(id: UUID): BreedDto {

@@ -1,6 +1,7 @@
 package com.pawcial.service
 
 import com.pawcial.dto.CreateSpeciesRequest
+import com.pawcial.dto.PagedResponse
 import com.pawcial.dto.SpeciesDto
 import com.pawcial.dto.UpdateSpeciesRequest
 import com.pawcial.entity.core.Species
@@ -13,12 +14,62 @@ import java.util.*
 @ApplicationScoped
 class SpeciesService {
 
-    fun findAll(all: Boolean = false): List<SpeciesDto> {
-        return if (all) {
-            Species.findAll().list().map { it.toDto() }
+    fun findAll(all: Boolean = false, page: Int = 0, size: Int = 20): PagedResponse<SpeciesDto> {
+        val query = if (all) "1=1" else "isActive = true"
+
+        val totalElements = Species.count(query)
+
+        val content = if (all) {
+            Species.findAll().page(page, size).list().map { it.toDto() }
         } else {
-            Species.find("isActive = true").list().map { it.toDto() }
+            Species.find("isActive = true").page(page, size).list().map { it.toDto() }
         }
+
+        val totalPages = ((totalElements + size - 1) / size).toInt()
+
+        return PagedResponse(
+            content = content,
+            page = page,
+            size = size,
+            totalElements = totalElements,
+            totalPages = totalPages,
+            hasNext = page < totalPages - 1,
+            hasPrevious = page > 0
+        )
+    }
+
+    fun search(scientificName: String?, commonName: String?, all: Boolean = false, page: Int = 0, size: Int = 20): PagedResponse<SpeciesDto> {
+        var query = if (all) "1=1" else "isActive = true"
+        val params = mutableMapOf<String, Any>()
+
+        if (!scientificName.isNullOrBlank()) {
+            query += " and lower(scientificName) like lower(:scientificName)"
+            params["scientificName"] = "%$scientificName%"
+        }
+
+        if (!commonName.isNullOrBlank()) {
+            query += " and lower(commonName) like lower(:commonName)"
+            params["commonName"] = "%$commonName%"
+        }
+
+        val totalElements = Species.count(query, params)
+
+        val content = Species.find(query, params)
+            .page(page, size)
+            .list()
+            .map { it.toDto() }
+
+        val totalPages = ((totalElements + size - 1) / size).toInt()
+
+        return PagedResponse(
+            content = content,
+            page = page,
+            size = size,
+            totalElements = totalElements,
+            totalPages = totalPages,
+            hasNext = page < totalPages - 1,
+            hasPrevious = page > 0
+        )
     }
 
     fun findById(id: UUID): SpeciesDto {
