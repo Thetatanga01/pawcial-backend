@@ -5,6 +5,7 @@ import com.pawcial.dto.CreateDomesticStatusRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.DomesticStatus
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class DomesticStatusService {
 
     @Transactional
     fun create(request: CreateDomesticStatusRequest): DomesticStatusDto {
+        ValidationUtils.validateCode(request.code, "DomesticStatus code")
+
         val existing = DomesticStatus.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("DomesticStatus with code '${request.code}' already exists")

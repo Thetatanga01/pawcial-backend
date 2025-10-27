@@ -4,6 +4,7 @@ import com.pawcial.dto.OutcomeTypeDto
 import com.pawcial.dto.CreateOutcomeTypeRequest
 import com.pawcial.entity.dictionary.OutcomeType
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -20,6 +21,8 @@ class OutcomeTypeService {
 
     @Transactional
     fun create(request: CreateOutcomeTypeRequest): OutcomeTypeDto {
+        ValidationUtils.validateCode(request.code, "OutcomeType code")
+
         val outcomeType = OutcomeType().apply {
             code = request.code
             label = request.label

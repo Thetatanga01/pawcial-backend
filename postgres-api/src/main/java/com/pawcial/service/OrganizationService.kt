@@ -5,6 +5,7 @@ import com.pawcial.dto.OrganizationDto
 import com.pawcial.dto.UpdateOrganizationRequest
 import com.pawcial.entity.dictionary.Organization
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
@@ -28,6 +29,9 @@ class OrganizationService {
 
     @Transactional
     fun create(request: CreateOrganizationRequest): OrganizationDto {
+        // Validate code has no spaces
+        ValidationUtils.validateCode(request.code, "Organization code")
+
         val existing = Organization.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("Organization with code ${request.code} already exists")

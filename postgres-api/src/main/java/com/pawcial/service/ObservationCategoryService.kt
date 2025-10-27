@@ -5,6 +5,7 @@ import com.pawcial.dto.CreateObservationCategoryRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.ObservationCategory
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class ObservationCategoryService {
 
     @Transactional
     fun create(request: CreateObservationCategoryRequest): ObservationCategoryDto {
+        ValidationUtils.validateCode(request.code, "ObservationCategory code")
+
         val existing = ObservationCategory.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("ObservationCategory with code '${request.code}' already exists")

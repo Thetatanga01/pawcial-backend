@@ -5,6 +5,7 @@ import com.pawcial.dto.CreatePlacementStatusRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.PlacementStatus
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class PlacementStatusService {
 
     @Transactional
     fun create(request: CreatePlacementStatusRequest): PlacementStatusDto {
+        ValidationUtils.validateCode(request.code, "PlacementStatus code")
+
         val existing = PlacementStatus.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("PlacementStatus with code '${request.code}' already exists")

@@ -5,6 +5,7 @@ import com.pawcial.dto.CreateZonePurposeRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.ZonePurpose
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class ZonePurposeService {
 
     @Transactional
     fun create(request: CreateZonePurposeRequest): ZonePurposeDto {
+        ValidationUtils.validateCode(request.code, "ZonePurpose code")
+
         val existing = ZonePurpose.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("ZonePurpose with code '${request.code}' already exists")

@@ -2,11 +2,13 @@ package com.pawcial.service
 
 import com.pawcial.dto.AssetDto
 import com.pawcial.dto.CreateAssetRequest
+import com.pawcial.dto.PagedResponse
 import com.pawcial.dto.UpdateAssetRequest
 import com.pawcial.entity.core.Asset
 import com.pawcial.entity.core.Facility
 import com.pawcial.entity.core.FacilityUnit
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
@@ -15,12 +17,77 @@ import java.util.*
 @ApplicationScoped
 class AssetService {
 
-    fun findAll(all: Boolean = false): List<AssetDto> {
-        return if (all) {
-            Asset.findAll().list().map { it.toDto() }
-        } else {
-            Asset.find("isActive = true").list().map { it.toDto() }
+    fun findAll(facilityId: UUID?, status: String?, all: Boolean = false, page: Int = 0, size: Int = 20): PagedResponse<AssetDto> {
+        var query = if (all) "1=1" else "isActive = true"
+        val params = mutableMapOf<String, Any>()
+
+        if (facilityId != null) {
+            query += " and facility.id = :facilityId"
+            params["facilityId"] = facilityId
         }
+
+        if (!status.isNullOrBlank()) {
+            query += " and lower(status) = lower(:status)"
+            params["status"] = status
+        }
+
+        val totalElements = Asset.count(query, params)
+
+        val content = Asset.find(query, params)
+            .page(page, size)
+            .list()
+            .map { it.toDto() }
+
+        val totalPages = ((totalElements + size - 1) / size).toInt()
+
+        return PagedResponse(
+            content = content,
+            page = page,
+            size = size,
+            totalElements = totalElements,
+            totalPages = totalPages,
+            hasNext = page < totalPages - 1,
+            hasPrevious = page > 0
+        )
+    }
+
+    fun search(name: String?, code: String?, type: String?, all: Boolean = false, page: Int = 0, size: Int = 20): PagedResponse<AssetDto> {
+        var query = if (all) "1=1" else "isActive = true"
+        val params = mutableMapOf<String, Any>()
+
+        if (!name.isNullOrBlank()) {
+            query += " and lower(name) like lower(:name)"
+            params["name"] = "%$name%"
+        }
+
+        if (!code.isNullOrBlank()) {
+            query += " and lower(code) like lower(:code)"
+            params["code"] = "%$code%"
+        }
+
+        if (!type.isNullOrBlank()) {
+            query += " and lower(type) like lower(:type)"
+            params["type"] = "%$type%"
+        }
+
+        val totalElements = Asset.count(query, params)
+
+        val content = Asset.find(query, params)
+            .page(page, size)
+            .list()
+            .map { it.toDto() }
+
+        val totalPages = ((totalElements + size - 1) / size).toInt()
+
+        return PagedResponse(
+            content = content,
+            page = page,
+            size = size,
+            totalElements = totalElements,
+            totalPages = totalPages,
+            hasNext = page < totalPages - 1,
+            hasPrevious = page > 0
+        )
     }
 
     fun findById(id: UUID): AssetDto {
@@ -30,6 +97,8 @@ class AssetService {
 
     @Transactional
     fun create(request: CreateAssetRequest): AssetDto {
+        ValidationUtils.validateCode(request.code, "Asset code")
+
         val facility = Facility.findById(request.facilityId)
             ?: throw NotFoundException("Facility not found: ${request.facilityId}")
 

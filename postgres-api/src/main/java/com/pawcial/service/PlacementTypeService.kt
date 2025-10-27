@@ -5,6 +5,7 @@ import com.pawcial.dto.CreatePlacementTypeRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.PlacementType
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class PlacementTypeService {
 
     @Transactional
     fun create(request: CreatePlacementTypeRequest): PlacementTypeDto {
+        ValidationUtils.validateCode(request.code, "PlacementType code")
+
         val existing = PlacementType.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("PlacementType with code '${request.code}' already exists")

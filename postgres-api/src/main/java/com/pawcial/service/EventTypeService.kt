@@ -5,6 +5,7 @@ import com.pawcial.dto.CreateEventTypeRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.EventType
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class EventTypeService {
 
     @Transactional
     fun create(request: CreateEventTypeRequest): EventTypeDto {
+        ValidationUtils.validateCode(request.code, "EventType code")
+
         val existing = EventType.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("EventType with code '${request.code}' already exists")

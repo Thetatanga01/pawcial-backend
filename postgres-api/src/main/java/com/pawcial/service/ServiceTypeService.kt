@@ -5,6 +5,7 @@ import com.pawcial.dto.CreateServiceTypeRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.ServiceType
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class ServiceTypeService {
 
     @Transactional
     fun create(request: CreateServiceTypeRequest): ServiceTypeDto {
+        ValidationUtils.validateCode(request.code, "ServiceType code")
+
         val existing = ServiceType.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("ServiceType with code '${request.code}' already exists")

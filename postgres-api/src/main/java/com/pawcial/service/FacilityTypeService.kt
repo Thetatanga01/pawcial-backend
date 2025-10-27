@@ -5,6 +5,7 @@ import com.pawcial.dto.CreateFacilityTypeRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.FacilityType
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class FacilityTypeService {
 
     @Transactional
     fun create(request: CreateFacilityTypeRequest): FacilityTypeDto {
+        ValidationUtils.validateCode(request.code, "FacilityType code")
+
         val existing = FacilityType.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("FacilityType with code '${request.code}' already exists")

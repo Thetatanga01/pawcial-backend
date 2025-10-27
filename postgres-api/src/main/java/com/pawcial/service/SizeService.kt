@@ -5,6 +5,7 @@ import com.pawcial.dto.CreateSizeRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.Size
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class SizeService {
 
     @Transactional
     fun create(request: CreateSizeRequest): SizeDto {
+        ValidationUtils.validateCode(request.code, "Size code")
+
         val existing = Size.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("Size with code '${request.code}' already exists")

@@ -5,6 +5,7 @@ import com.pawcial.dto.CreateTrainingLevelRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.TrainingLevel
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class TrainingLevelService {
 
     @Transactional
     fun create(request: CreateTrainingLevelRequest): TrainingLevelDto {
+        ValidationUtils.validateCode(request.code, "TrainingLevel code")
+
         val existing = TrainingLevel.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("TrainingLevel with code '${request.code}' already exists")

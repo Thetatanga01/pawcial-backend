@@ -5,6 +5,7 @@ import com.pawcial.dto.CreateVolunteerAreaDictionaryRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.VolunteerAreaDictionary
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class VolunteerAreaService {
 
     @Transactional
     fun create(request: CreateVolunteerAreaDictionaryRequest): VolunteerAreaDto {
+        ValidationUtils.validateCode(request.code, "VolunteerArea code")
+
         val existing = VolunteerAreaDictionary.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("VolunteerArea with code '${request.code}' already exists")

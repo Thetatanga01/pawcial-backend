@@ -2,6 +2,7 @@ package com.pawcial.service
 
 import com.pawcial.dto.CreateFacilityRequest
 import com.pawcial.dto.FacilityDto
+import com.pawcial.dto.PagedResponse
 import com.pawcial.dto.UpdateFacilityRequest
 import com.pawcial.entity.core.Facility
 import com.pawcial.extension.toDto
@@ -13,12 +14,67 @@ import java.util.*
 @ApplicationScoped
 class FacilityService {
 
-    fun findAll(all: Boolean = false): List<FacilityDto> {
-        return if (all) {
-            Facility.findAll().list().map { it.toDto() }
+    fun findAll(all: Boolean = false, page: Int = 0, size: Int = 20): PagedResponse<FacilityDto> {
+        val query = if (all) "1=1" else "isActive = true"
+
+        val totalElements = Facility.count(query)
+
+        val content = if (all) {
+            Facility.findAll().page(page, size).list().map { it.toDto() }
         } else {
-            Facility.find("isActive = true").list().map { it.toDto() }
+            Facility.find("isActive = true").page(page, size).list().map { it.toDto() }
         }
+
+        val totalPages = ((totalElements + size - 1) / size).toInt()
+
+        return PagedResponse(
+            content = content,
+            page = page,
+            size = size,
+            totalElements = totalElements,
+            totalPages = totalPages,
+            hasNext = page < totalPages - 1,
+            hasPrevious = page > 0
+        )
+    }
+
+    fun search(name: String?, city: String?, type: String?, all: Boolean = false, page: Int = 0, size: Int = 20): PagedResponse<FacilityDto> {
+        var query = if (all) "1=1" else "isActive = true"
+        val params = mutableMapOf<String, Any>()
+
+        if (!name.isNullOrBlank()) {
+            query += " and lower(name) like lower(:name)"
+            params["name"] = "%$name%"
+        }
+
+        if (!city.isNullOrBlank()) {
+            query += " and lower(city) like lower(:city)"
+            params["city"] = "%$city%"
+        }
+
+        if (!type.isNullOrBlank()) {
+            query += " and lower(type) like lower(:type)"
+            params["type"] = "%$type%"
+        }
+
+        val totalElements = Facility.count(query, params)
+
+        val content = Facility.find(query, params)
+            .page(page, size)
+            .list()
+            .map { it.toDto() }
+
+        val totalPages = ((totalElements + size - 1) / size).toInt()
+
+        return PagedResponse(
+            content = content,
+            page = page,
+            size = size,
+            totalElements = totalElements,
+            totalPages = totalPages,
+            hasNext = page < totalPages - 1,
+            hasPrevious = page > 0
+        )
     }
 
     fun findById(id: UUID): FacilityDto {

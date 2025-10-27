@@ -5,6 +5,7 @@ import com.pawcial.dto.CreateTemperamentRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.Temperament
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class TemperamentService {
 
     @Transactional
     fun create(request: CreateTemperamentRequest): TemperamentDto {
+        ValidationUtils.validateCode(request.code, "Temperament code")
+
         val existing = Temperament.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("Temperament with code '${request.code}' already exists")

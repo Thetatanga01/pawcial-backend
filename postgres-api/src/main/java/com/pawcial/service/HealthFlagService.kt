@@ -5,6 +5,7 @@ import com.pawcial.dto.CreateHealthFlagRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.HealthFlag
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class HealthFlagService {
 
     @Transactional
     fun create(request: CreateHealthFlagRequest): HealthFlagDto {
+        ValidationUtils.validateCode(request.code, "HealthFlag code")
+
         val existing = HealthFlag.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("HealthFlag with code '${request.code}' already exists")

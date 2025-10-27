@@ -5,6 +5,7 @@ import com.pawcial.dto.CreateColorRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.Color
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,9 @@ class ColorService {
 
     @Transactional
     fun create(request: CreateColorRequest): ColorDto {
+        // Validate code has no spaces
+        ValidationUtils.validateCode(request.code, "Color code")
+
         // Check if color with this code already exists
         val existing = Color.findById(request.code)
         if (existing != null) {

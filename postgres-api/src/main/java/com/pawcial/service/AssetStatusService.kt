@@ -5,6 +5,7 @@ import com.pawcial.dto.CreateAssetStatusRequest
 import com.pawcial.dto.UpdateLabelRequest
 import com.pawcial.entity.dictionary.AssetStatus
 import com.pawcial.extension.toDto
+import com.pawcial.util.ValidationUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 
@@ -21,6 +22,8 @@ class AssetStatusService {
 
     @Transactional
     fun create(request: CreateAssetStatusRequest): AssetStatusDto {
+        ValidationUtils.validateCode(request.code, "AssetStatus code")
+
         val existing = AssetStatus.findById(request.code)
         if (existing != null) {
             throw IllegalArgumentException("AssetStatus with code '${request.code}' already exists")

@@ -2,6 +2,7 @@ package com.pawcial.resource
 
 import com.pawcial.dto.AssetDto
 import com.pawcial.dto.CreateAssetRequest
+import com.pawcial.dto.PagedResponse
 import com.pawcial.dto.UpdateAssetRequest
 import com.pawcial.service.AssetService
 import jakarta.inject.Inject
@@ -24,13 +25,42 @@ class AssetResource {
     lateinit var assetService: AssetService
 
     @GET
-    @Operation(summary = "Tüm varlıkları listele", description = "Aktif veya tüm varlıkları getirir")
+    @Operation(summary = "Tüm varlıkları listele", description = "Aktif veya tüm varlıkları getirir (sayfalama ile)")
     @APIResponse(responseCode = "200", description = "Başarılı")
     fun getAllAssets(
+        @Parameter(description = "Tesise göre filtrele")
+        @QueryParam("facility") facilityId: UUID?,
+        @Parameter(description = "Duruma göre filtrele")
+        @QueryParam("status") status: String?,
         @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
-        @QueryParam("all") @DefaultValue("false") all: Boolean
-    ): List<AssetDto> {
-        return assetService.findAll(all)
+        @QueryParam("all") @DefaultValue("false") all: Boolean,
+        @Parameter(description = "Sayfa numarası (0'dan başlar)")
+        @QueryParam("page") @DefaultValue("0") page: Int,
+        @Parameter(description = "Sayfa boyutu")
+        @QueryParam("size") @DefaultValue("20") size: Int
+    ): PagedResponse<AssetDto> {
+        return assetService.findAll(facilityId, status, all, page, size)
+    }
+
+    @GET
+    @Path("/search")
+    @Operation(summary = "Varlıklarda ara", description = "İsim, kod veya tipe göre arama")
+    @APIResponse(responseCode = "200", description = "Başarılı")
+    fun searchAssets(
+        @Parameter(description = "Varlık ismi ile arama")
+        @QueryParam("name") name: String?,
+        @Parameter(description = "Varlık kodu ile arama")
+        @QueryParam("code") code: String?,
+        @Parameter(description = "Varlık tipi ile arama")
+        @QueryParam("type") type: String?,
+        @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
+        @QueryParam("all") @DefaultValue("false") all: Boolean,
+        @Parameter(description = "Sayfa numarası (0'dan başlar)")
+        @QueryParam("page") @DefaultValue("0") page: Int,
+        @Parameter(description = "Sayfa boyutu")
+        @QueryParam("size") @DefaultValue("20") size: Int
+    ): PagedResponse<AssetDto> {
+        return assetService.search(name, code, type, all, page, size)
     }
 
     @GET
