@@ -10,8 +10,7 @@ data class PersonDto(
     val address: String?,
     val notes: String?,
     val isOrganization: Boolean,
-    val organizationName: String?,
-    val organizationType: String?,
+    val organization: OrganizationDto?,
     val isActive: Boolean
 )
 

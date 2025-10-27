@@ -4,6 +4,18 @@ import com.pawcial.dto.*
 import com.pawcial.entity.core.*
 import com.pawcial.entity.dictionary.*
 
+// Dictionary entities extensions
+fun Organization.toDto() = OrganizationDto(
+    code = this.code,
+    label = this.label,
+    organizationType = this.organizationType,
+    contactPhone = this.contactPhone,
+    contactEmail = this.contactEmail,
+    address = this.address,
+    notes = this.notes,
+    isActive = this.isActive
+)
+
 // Core entities extensions
 fun Species.toDto() = SpeciesDto(
     id = this.id,
@@ -61,8 +73,7 @@ fun Person.toDto() = PersonDto(
     address = this.address,
     notes = this.notes,
     isOrganization = this.isOrganization,
-    organizationName = this.organizationName,
-    organizationType = this.organizationType,
+    organization = this.organization?.toDto(),
     isActive = this.isActive
 )
 

@@ -1,6 +1,7 @@
 package com.pawcial.entity.core
 
 import com.pawcial.entity.BaseEntity
+import com.pawcial.entity.dictionary.Organization
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanionBase
 import jakarta.persistence.*
 import java.util.*
@@ -27,11 +28,9 @@ class Person : BaseEntity() {
     @Column(name = "is_organization")
     var isOrganization: Boolean = false
 
-    @Column(name = "organization_name")
-    var organizationName: String? = null
-
-    @Column(name = "organization_type")
-    var organizationType: String? = null
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_code", referencedColumnName = "code")
+    var organization: Organization? = null
 
     @OneToMany(mappedBy = "person", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var volunteers: MutableList<Volunteer> = mutableListOf()

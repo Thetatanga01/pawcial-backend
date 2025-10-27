@@ -7,7 +7,6 @@ data class CreatePersonRequest(
     val address: String?,
     val notes: String?,
     val isOrganization: Boolean = false,
-    val organizationName: String?,
-    val organizationType: String?
+    val organizationCode: String?
 )
 

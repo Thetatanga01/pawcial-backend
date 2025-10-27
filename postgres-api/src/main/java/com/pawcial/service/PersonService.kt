@@ -5,6 +5,7 @@ import com.pawcial.dto.PagedResponse
 import com.pawcial.dto.PersonDto
 import com.pawcial.dto.UpdatePersonRequest
 import com.pawcial.entity.core.Person
+import com.pawcial.entity.dictionary.Organization
 import com.pawcial.extension.toDto
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
@@ -95,8 +96,10 @@ class PersonService {
             address = request.address
             notes = request.notes
             isOrganization = request.isOrganization
-            organizationName = request.organizationName
-            organizationType = request.organizationType
+            organization = request.organizationCode?.let {
+                Organization.findById(it)
+                    ?: throw NotFoundException("Organization not found: $it")
+            }
         }
         person.persist()
         return person.toDto()
@@ -114,8 +117,10 @@ class PersonService {
             request.address?.let { address = it }
             request.notes?.let { notes = it }
             request.isOrganization?.let { isOrganization = it }
-            request.organizationName?.let { organizationName = it }
-            request.organizationType?.let { organizationType = it }
+            request.organizationCode?.let { orgCode ->
+                organization = Organization.findById(orgCode)
+                    ?: throw NotFoundException("Organization not found: $orgCode")
+            }
         }
         person.persist()
         return person.toDto()
