@@ -2,6 +2,7 @@ package com.pawcial.resource
 
 import com.pawcial.dto.CreateFacilityZoneRequest
 import com.pawcial.dto.FacilityZoneDto
+import com.pawcial.dto.PagedResponse
 import com.pawcial.dto.UpdateFacilityZoneRequest
 import com.pawcial.service.FacilityZoneService
 import jakarta.inject.Inject
@@ -24,13 +25,38 @@ class FacilityZoneResource {
     lateinit var facilityZoneService: FacilityZoneService
 
     @GET
-    @Operation(summary = "Tüm tesis bölgelerini listele", description = "Aktif veya tüm tesis bölgelerini getirir")
+    @Operation(summary = "Tüm tesis bölgelerini listele", description = "Aktif veya tüm tesis bölgelerini getirir (sayfalama ile)")
     @APIResponse(responseCode = "200", description = "Başarılı")
     fun getAllFacilityZones(
         @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
-        @QueryParam("all") @DefaultValue("false") all: Boolean
-    ): List<FacilityZoneDto> {
-        return facilityZoneService.findAll(all)
+        @QueryParam("all") @DefaultValue("false") all: Boolean,
+        @Parameter(description = "Sayfa numarası (0'dan başlar)")
+        @QueryParam("page") @DefaultValue("0") page: Int,
+        @Parameter(description = "Sayfa boyutu")
+        @QueryParam("size") @DefaultValue("20") size: Int
+    ): PagedResponse<FacilityZoneDto> {
+        return facilityZoneService.findAll(all, page, size)
+    }
+
+    @GET
+    @Path("/search")
+    @Operation(summary = "Tesis bölgelerinde ara", description = "İsim, açıklama veya tesis adına göre arama")
+    @APIResponse(responseCode = "200", description = "Başarılı")
+    fun searchFacilityZones(
+        @Parameter(description = "Bölge ismi ile arama")
+        @QueryParam("name") name: String?,
+        @Parameter(description = "Açıklama ile arama")
+        @QueryParam("description") description: String?,
+        @Parameter(description = "Tesis ID ile filtreleme")
+        @QueryParam("facilityId") facilityId: UUID?,
+        @Parameter(description = "Tüm kayıtları getir (aktif olmayanlar dahil)")
+        @QueryParam("all") @DefaultValue("false") all: Boolean,
+        @Parameter(description = "Sayfa numarası (0'dan başlar)")
+        @QueryParam("page") @DefaultValue("0") page: Int,
+        @Parameter(description = "Sayfa boyutu")
+        @QueryParam("size") @DefaultValue("20") size: Int
+    ): PagedResponse<FacilityZoneDto> {
+        return facilityZoneService.search(name, description, facilityId, all, page, size)
     }
 
     @GET

@@ -1,35 +1,44 @@
 package com.pawcial.service
 
+import com.pawcial.dto.AnimalEventDto
 import com.pawcial.dto.CreateAnimalEventRequest
+import com.pawcial.dto.UpdateAnimalEventRequest
 import com.pawcial.entity.core.*
+import com.pawcial.entity.dictionary.*
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
+import jakarta.ws.rs.BadRequestException
+import java.time.OffsetDateTime
 import java.util.*
 
 @ApplicationScoped
 class AnimalEventService {
 
-    fun findAll(animalId: UUID?, all: Boolean = false): List<AnimalEvent> {
+    fun findAll(animalId: UUID?, all: Boolean = false): List<AnimalEventDto> {
         val activeFilter = if (all) "" else " and isActive = true"
-        return if (animalId != null) {
-            AnimalEvent.find("animal.id = ?1$activeFilter", animalId).list()
+        val orderBy = " order by eventAt desc"
+
+        val events = if (animalId != null) {
+            AnimalEvent.find("animal.id = ?1$activeFilter$orderBy", animalId).list()
         } else {
             if (all) {
-                AnimalEvent.findAll().list()
+                AnimalEvent.find("1=1$orderBy").list()
             } else {
-                AnimalEvent.find("isActive = true").list()
+                AnimalEvent.find("isActive = true$orderBy").list()
             }
         }
+        return events.map { toDto(it) }
     }
 
-    fun findById(id: UUID): AnimalEvent {
-        return AnimalEvent.findById(id)
+    fun findById(id: UUID): AnimalEventDto {
+        val event = AnimalEvent.findById(id)
             ?: throw NotFoundException("AnimalEvent not found: $id")
+        return toDto(event)
     }
 
     @Transactional
-    fun create(request: CreateAnimalEventRequest): AnimalEvent {
+    fun create(request: CreateAnimalEventRequest): AnimalEventDto {
         val animal = Animal.findById(request.animalId)
             ?: throw NotFoundException("Animal not found: ${request.animalId}")
 
@@ -92,15 +101,154 @@ class AnimalEventService {
             details = request.details
         }
         event.persist()
-        return event
+        return toDto(event)
     }
 
     @Transactional
     fun delete(id: UUID) {
         val event = AnimalEvent.findById(id)
             ?: throw NotFoundException("AnimalEvent not found: $id")
+
+        // 30 dakikadan eski event'ler silinemez
+        if (isOlderThan30Minutes(event.createdAt)) {
+            throw BadRequestException("Cannot delete event: Event is older than 30 minutes and is now read-only")
+        }
+
         event.isActive = !event.isActive
         event.persist()
+    }
+
+    /**
+     * Checks if the given timestamp is older than 30 minutes from now
+     */
+    private fun isOlderThan30Minutes(createdAt: OffsetDateTime?): Boolean {
+        if (createdAt == null) return false
+        val now = OffsetDateTime.now()
+        val thirtyMinutesAgo = now.minusMinutes(30)
+        return createdAt.isBefore(thirtyMinutesAgo)
+    }
+
+    @Transactional
+    fun update(id: UUID, request: UpdateAnimalEventRequest): AnimalEventDto {
+        val event = AnimalEvent.findById(id)
+            ?: throw NotFoundException("AnimalEvent not found: $id")
+
+        // 30 dakikadan eski event'ler güncellenemez
+        if (isOlderThan30Minutes(event.createdAt)) {
+            throw BadRequestException("Cannot update event: Event is older than 30 minutes and is now read-only")
+        }
+
+        request.eventType?.let { event.eventType = it }
+        request.eventAt?.let { event.eventAt = it }
+
+        // ...existing code...
+
+        request.facilityId?.let {
+            event.facility = Facility.findById(it)
+                ?: throw NotFoundException("Facility not found: $it")
+        }
+
+        request.unitId?.let {
+            event.unit = FacilityUnit.findById(it)
+                ?: throw NotFoundException("FacilityUnit not found: $it")
+        }
+
+        request.fromFacilityId?.let {
+            event.fromFacility = Facility.findById(it)
+                ?: throw NotFoundException("FromFacility not found: $it")
+        }
+
+        request.toFacilityId?.let {
+            event.toFacility = Facility.findById(it)
+                ?: throw NotFoundException("ToFacility not found: $it")
+        }
+
+        request.fromUnitId?.let {
+            event.fromUnit = FacilityUnit.findById(it)
+                ?: throw NotFoundException("FromUnit not found: $it")
+        }
+
+        request.toUnitId?.let {
+            event.toUnit = FacilityUnit.findById(it)
+                ?: throw NotFoundException("ToUnit not found: $it")
+        }
+
+        request.personId?.let {
+            event.person = Person.findById(it)
+                ?: throw NotFoundException("Person not found: $it")
+        }
+
+        request.volunteerId?.let {
+            event.volunteer = Volunteer.findById(it)
+                ?: throw NotFoundException("Volunteer not found: $it")
+        }
+
+        request.outcomeType?.let { event.outcomeType = it }
+        request.sourceType?.let { event.sourceType = it }
+        request.holdType?.let { event.holdType = it }
+        request.medEventType?.let { event.medEventType = it }
+        request.vaccineCode?.let { event.vaccineCode = it }
+        request.medicationName?.let { event.medicationName = it }
+        request.doseText?.let { event.doseText = it }
+        request.route?.let { event.route = it }
+        request.labTestName?.let { event.labTestName = it }
+        request.resultText?.let { event.resultText = it }
+        request.nextDueDate?.let { event.nextDueDate = it }
+        request.vetName?.let { event.vetName = it }
+        request.details?.let { event.details = it }
+
+        event.persist()
+        return toDto(event)
+    }
+
+    private fun toDto(event: AnimalEvent): AnimalEventDto {
+        return AnimalEventDto(
+            id = event.id,
+            animalId = event.animal?.id,
+            animalName = event.animal?.name,
+            eventType = event.eventType,
+            eventTypeLabel = event.eventType?.let { EventType.findById(it)?.label },
+            eventAt = event.eventAt,
+            facilityId = event.facility?.id,
+            facilityName = event.facility?.name,
+            unitId = event.unit?.id,
+            unitCode = event.unit?.code,
+            fromFacilityId = event.fromFacility?.id,
+            fromFacilityName = event.fromFacility?.name,
+            toFacilityId = event.toFacility?.id,
+            toFacilityName = event.toFacility?.name,
+            fromUnitId = event.fromUnit?.id,
+            fromUnitCode = event.fromUnit?.code,
+            toUnitId = event.toUnit?.id,
+            toUnitCode = event.toUnit?.code,
+            outcomeType = event.outcomeType,
+            outcomeTypeLabel = event.outcomeType?.let { OutcomeType.findById(it)?.label },
+            sourceType = event.sourceType,
+            sourceTypeLabel = event.sourceType?.let { SourceType.findById(it)?.label },
+            holdType = event.holdType,
+            holdTypeLabel = event.holdType?.let { HoldType.findById(it)?.label },
+            personId = event.person?.id,
+            personName = event.person?.fullName,
+            volunteerId = event.volunteer?.id,
+            volunteerName = event.volunteer?.person?.fullName,
+            medEventType = event.medEventType,
+            medEventTypeLabel = event.medEventType?.let { MedEventType.findById(it)?.label },
+            vaccineCode = event.vaccineCode,
+            vaccineLabel = event.vaccineCode?.let { Vaccine.findById(it)?.label },
+            medicationName = event.medicationName,
+            doseText = event.doseText,
+            route = event.route,
+            routeLabel = event.route?.let { DoseRoute.findById(it)?.label },
+            labTestName = event.labTestName,
+            resultText = event.resultText,
+            nextDueDate = event.nextDueDate,
+            vetName = event.vetName,
+            details = event.details,
+            isActive = event.isActive,
+            createdAt = event.createdAt,
+            updatedAt = event.updatedAt,
+            isReadOnly = isOlderThan30Minutes(event.createdAt)
+        )
     }
 }
 

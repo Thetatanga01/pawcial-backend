@@ -37,8 +37,6 @@ quarkus:
 
   # Hibernate Configuration
   hibernate-orm:
-    database:
-      generation: none                  # Hibernate'in DDL işlemleri yapmamasını sağla (Flyway kullanıyoruz)
     validate-in-dev-mode: false         # Dev mode'da schema validation yapma
 
   # HTTP Configuration
@@ -46,12 +44,12 @@ quarkus:
     port: 8000
     cors:
       ~: true
-      origins: "/.*/"
+      origins: "http://localhost:5173,http://localhost:8000"
       methods: "GET,POST,PUT,DELETE,OPTIONS,PATCH"
-      headers: "*"
-      exposed-headers: "*"
+      headers: "accept, authorization, content-type, x-requested-with"
+      exposed-headers: "Content-Disposition"
       access-control-max-age: 24H
-      access-control-allow-credentials: false
+      access-control-allow-credentials: true
 
   # Log Level
   log:
@@ -62,13 +60,6 @@ quarkus:
 
   # OpenAPI/Swagger Configuration
   smallrye-openapi:
-    info-title: Pawcial API
-    info-version: 1.0.0
-    info-description: Pawcial - Hayvan Barınağı Yönetim Sistemi REST API
-    info-contact-name: Pawcial Team
-    servers:
-      - url: http://localhost:8000
-        description: Development server
     path: /openapi
   swagger-ui:
     always-include: true

@@ -2,6 +2,7 @@ package com.pawcial.service
 
 import com.pawcial.dto.CreateFacilityZoneRequest
 import com.pawcial.dto.FacilityZoneDto
+import com.pawcial.dto.PagedResponse
 import com.pawcial.dto.UpdateFacilityZoneRequest
 import com.pawcial.entity.core.Facility
 import com.pawcial.entity.core.FacilityZone
@@ -14,12 +15,76 @@ import java.util.*
 @ApplicationScoped
 class FacilityZoneService {
 
-    fun findAll(all: Boolean = false): List<FacilityZoneDto> {
-        return if (all) {
-            FacilityZone.findAll().list().map { it.toDto() }
+    fun findAll(all: Boolean = false, page: Int = 0, size: Int = 20): PagedResponse<FacilityZoneDto> {
+        val query = if (all) {
+            FacilityZone.findAll()
         } else {
-            FacilityZone.find("isActive = true").list().map { it.toDto() }
+            FacilityZone.find("isActive = true")
         }
+
+        val totalCount = query.count()
+        val zones = query.page(page, size).list()
+
+        return PagedResponse(
+            content = zones.map { it.toDto() },
+            page = page,
+            size = size,
+            totalElements = totalCount,
+            totalPages = ((totalCount + size - 1) / size).toInt(),
+            hasNext = page < ((totalCount + size - 1) / size).toInt() - 1,
+            hasPrevious = page > 0
+        )
+    }
+
+    fun search(
+        name: String?,
+        description: String?,
+        facilityId: UUID?,
+        all: Boolean = false,
+        page: Int = 0,
+        size: Int = 20
+    ): PagedResponse<FacilityZoneDto> {
+        val conditions = mutableListOf<String>()
+        val params = mutableMapOf<String, Any>()
+
+        if (!all) {
+            conditions.add("isActive = true")
+        }
+
+        name?.let {
+            conditions.add("LOWER(name) LIKE LOWER(:name)")
+            params["name"] = "%$it%"
+        }
+
+        description?.let {
+            conditions.add("LOWER(purpose) LIKE LOWER(:description)")
+            params["description"] = "%$it%"
+        }
+
+        facilityId?.let {
+            conditions.add("facility.id = :facilityId")
+            params["facilityId"] = it
+        }
+
+        val whereClause = if (conditions.isEmpty()) "" else conditions.joinToString(" AND ")
+        val query = if (whereClause.isEmpty()) {
+            FacilityZone.findAll()
+        } else {
+            FacilityZone.find(whereClause, params)
+        }
+
+        val totalCount = query.count()
+        val zones = query.page(page, size).list()
+
+        return PagedResponse(
+            content = zones.map { it.toDto() },
+            page = page,
+            size = size,
+            totalElements = totalCount,
+            totalPages = ((totalCount + size - 1) / size).toInt(),
+            hasNext = page < ((totalCount + size - 1) / size).toInt() - 1,
+            hasPrevious = page > 0
+        )
     }
 
     fun findById(id: UUID): FacilityZoneDto {
