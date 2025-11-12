@@ -1,0 +1,93 @@
+# Production Profile Configuration
+# Bu dosya sadece %prod profile'ında aktif olur
+# Çalıştırmak için: java -Dquarkus.profile=prod -jar app.jar
+# TÜM SECRET'LAR VAULT'TAN ÇEKİLİR - DEFAULT VALUE YOK!
+
+quarkus:
+  # Vault Configuration - PROD environment
+  vault:
+    # Production için farklı secret path
+    secret-config-kv-path: ${VAULT_PATH}
+
+  # Production mode ayarları
+  log:
+    # Production'da daha az verbose logging
+    console:
+      enable: true
+      format: "%d{yyyy-MM-dd HH:mm:ss} %-5p [%c{3.}] (%t) %s%e%n"
+      json: false  # JSON formatı isterseniz true yapın
+    category:
+      "com.pawcial":
+        level: INFO
+      "org.hibernate":
+        level: WARN
+      "io.quarkus.security":
+        level: INFO
+      "io.quarkus.vault":
+        level: INFO  # Production'da TRACE değil INFO
+
+  # Production - Live reload KAPALI
+  live-reload:
+    instrumentation: false
+
+  # Production - Swagger KAPALI (security için)
+  swagger-ui:
+    always-include: false
+    enable: false
+
+  smallrye-openapi:
+    enable: false  # OpenAPI endpoint'i de kapat
+
+  # Production - Hibernate SQL logging KAPALI
+  hibernate-orm:
+    log:
+      sql: false  # Performance için kapalı
+      format-sql: false
+    statistics: false  # Hibernate statistics da kapalı
+
+  # Production - HTTP settings (static)
+  http:
+    limits:
+      max-body-size: 10M
+    read-timeout: 60s
+    cors:
+      methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS"
+      headers: "accept,authorization,content-type,x-requested-with"
+      exposed-headers: "Content-Disposition"
+      access-control-max-age: 24H
+
+  # Production - Datasource settings (Vault'tan gelecek değerler için statik config)
+  datasource:
+    db-kind: postgresql
+    devservices:
+      enabled: false
+    jdbc:
+      validation-query-sql: SELECT 1
+      background-validation-interval: 2M
+      acquisition-timeout: 10
+      max-lifetime: 30M  # Production'da daha uzun
+      idle-removal-interval: 10M
+      leak-detection-interval: 0  # Production'da disable
+      transaction-isolation-level: read-committed
+
+  # Production - Package type
+  package:
+    type: fast-jar
+
+  # Production - Security hardening
+  security:
+    deny-jaxrs: true  # JAX-RS security deny by default
+
+  # Production - Keycloak Policy Enforcer AÇIK
+  keycloak:
+    policy-enforcer:
+      enable: true
+      enforcement-mode: ENFORCING  # Production'da ENFORCING
+
+  # Production - Flyway
+  flyway:
+    clean-at-start: false
+    clean-disabled: true  # Production'da clean asla aktif olmamalı
+    migrate-at-start: true
+    baseline-on-migrate: false
+    validate-on-migrate: true

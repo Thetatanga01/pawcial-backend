@@ -1,0 +1,51 @@
+# PostgreSQL Database Configuration
+quarkus:
+  datasource:
+    db-kind: postgresql
+    username: postgres
+    password: TS3yngKpv3P7x8
+    jdbc:
+      url: jdbc:postgresql://192.168.0.58:5432/postgres
+      max-size: 16
+      min-size: 5
+      # Connection validation - ÖNEMLİ!
+      validation-query-sql: SELECT 1
+      # Her connection alınmadan önce test et
+      background-validation-interval: 2M
+      # İdari connection timeout ayarları
+      acquisition-timeout: 10
+      # Connection'ın poolda maksimum ne kadar kalacağı
+      max-lifetime: 10M
+      # Idle connection'ların ne kadar süre sonra temizleneceği
+      idle-removal-interval: 5M
+      # Connection leak detection (development için)
+      leak-detection-interval: 10M
+      # Pool'da en az bu kadar connection olsun
+      initial-size: 5
+      # Transaction timeout
+      transaction-isolation-level: read-committed
+
+  # Flyway Configuration
+  flyway:
+    migrate-at-start: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    #schema ayarlari
+    schemas: pawcial                    # Flyway'in çalışacağı schema(lar)
+    default-schema: pawcial             # Default schema
+    create-schemas: true                # Schema yoksa oluştur
+
+  # HTTP Configuration
+  http:
+    port: 8000
+    cors:
+      origins: "*"
+      methods: GET,POST,PUT,DELETE,OPTIONS,PATCH
+      headers: "*"
+
+  # Log Level
+  log:
+    level: INFO
+    category:
+      "org.flywaydb":
+        level: INFO

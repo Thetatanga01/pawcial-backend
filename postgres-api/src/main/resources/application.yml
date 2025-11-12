@@ -1,0 +1,102 @@
+# PostgreSQL Database Configuration
+# All sensitive values are automatically loaded from Vault via secret-config-kv-path
+# Vault keys should use full Quarkus property paths (e.g., quarkus.datasource.username)
+quarkus:
+  # Vault Configuration
+  vault:
+    url: ${VAULT_URL}
+    authentication:
+      client-token: ${VAULT_TOKEN}
+    # KV v2 engine configuration
+    kv-secret-engine-mount-path: secret
+    kv-secret-engine-version: 2
+    # All secrets from this path are automatically mapped to Quarkus config
+    secret-config-kv-path: pawcial/dev
+    # Connection timeout settings
+    connect-timeout: 5S
+    read-timeout: 5S
+    tls:
+      skip-verify: true
+    log-confidentiality-level: high
+
+  datasource:
+    db-kind: postgresql
+    username: will_be_coming_from_vault
+    devservices:
+      enabled: false
+    # Values automatically loaded from Vault via secret-config-kv-path
+    # DO NOT use ${quarkus.datasource.username} - creates recursive loop!
+    # Vault ConfigSource directly injects these values
+    jdbc:
+      # Connection validation - ÖNEMLİ!
+      validation-query-sql: SELECT 1
+      # Her connection alınmadan önce test et
+      background-validation-interval: 2M
+      # İdari connection timeout ayarları
+      acquisition-timeout: 10
+      # Connection'ın poolda maksimum ne kadar kalacağı
+      max-lifetime: 10M
+      # Idle connection'ların ne kadar süre sonra temizleneceği
+      idle-removal-interval: 5M
+      # Connection leak detection (development için)
+      leak-detection-interval: 10M
+      # Pool'da en az bu kadar connection olsun
+      initial-size: 5
+      # Transaction timeout
+      transaction-isolation-level: read-committed
+
+  # Flyway Configuration
+  flyway:
+    # Values loaded from Vault: quarkus.flyway.migrate-at-start, quarkus.flyway.clean-disabled
+    baseline-on-migrate: true
+    baseline-version: 0
+    #schema ayarlari
+    schemas: pawcial                    # Flyway'in çalışacağı schema(lar)
+    default-schema: pawcial             # Default schema
+    create-schemas: true                # Schema yoksa oluştur
+    # Connect retries - Vault'tan config yüklenmesini bekle
+    connect-retries: 10
+    connect-retries-interval: 2s
+
+  # Hibernate Configuration
+  hibernate-orm:
+    validate-in-dev-mode: false         # Dev mode'da schema validation yapma
+
+  # HTTP Configuration
+  # http.port and http.cors.origins loaded from Vault
+  http:
+    cors:
+      ~: true
+      methods: GET,POST,PUT,DELETE,OPTIONS,PATCH,HEAD
+      headers: accept,authorization,content-type,x-requested-with,origin,access-control-request-method,access-control-request-headers
+      exposed-headers: Content-Disposition,Content-Type,Content-Length
+      access-control-max-age: 86400
+      access-control-allow-credentials: true
+
+  # Log Level - loaded from Vault: quarkus.log.level
+  log:
+    category:
+      "org.flywaydb":
+        level: INFO
+
+  # OpenAPI/Swagger Configuration
+  smallrye-openapi:
+    path: /openapi
+  swagger-ui:
+    always-include: true
+    path: /swagger-ui
+
+  # Keycloak OIDC Configuration
+  # All OIDC settings loaded from Vault with quarkus.oidc.* keys
+  oidc:
+    # Policy Enforcement
+    token-state-manager:
+      strategy: keep-all-tokens
+
+  # Security config
+  security:
+    jaxrs:
+      deny-uncovered-http-endpoints: false
+
+# AWS S3 Settings - loaded from Vault with aws.* keys
+

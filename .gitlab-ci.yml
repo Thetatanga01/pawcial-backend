@@ -1,0 +1,78 @@
+stages:
+  - build
+  - test
+  - docker
+  - deploy
+
+variables:
+  DOCKER_IMAGE: $CI_REGISTRY_IMAGE
+  DEPLOY_HOST: 192.168.0.72
+  DEPLOY_USER: mustafa
+  DEPLOY_DIR: /home/mustafa/pawcial-backend
+  WORKING_DIR: postgres-api
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
+cache:
+  key: maven-cache
+  paths:
+    - .m2/repository
+
+test:
+  stage: test
+  image: maven:3.9-eclipse-temurin-21
+  tags:
+    - docker
+  script:
+    - cd $WORKING_DIR
+    - mvn test
+  only:
+    - master
+
+# DinD kullanmadan, host docker'ı kullan
+docker-build:
+  stage: docker
+  image: docker:24
+  tags:
+    - docker
+  variables:
+    DOCKER_HOST: unix:///var/run/docker.sock
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin http://192.168.0.79:5050
+  script:
+    - cd $WORKING_DIR
+    - docker build -f Dockerfile -t $DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA -t $DOCKER_IMAGE:latest .
+    - docker push $DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA
+    - docker push $DOCKER_IMAGE:latest
+  timeout: 15m
+  only:
+    - master
+
+deploy:
+  stage: deploy
+  image: alpine:latest
+  tags:
+    - docker
+  before_script:
+    - apk add --no-cache openssh-client
+    - echo "$SSH_PRIVATE_KEY_B64" | base64 -d | tr -d '\r' > /tmp/ssh_key
+    - chmod 600 /tmp/ssh_key
+    - mkdir -p /root/.ssh
+    - ssh-keyscan -t ed25519 192.168.0.72 >> /root/.ssh/known_hosts || true
+
+  script:
+    # 1. docker-compose.yml dosyasını kopyala
+    - scp -o IdentitiesOnly=yes -i /tmp/ssh_key $WORKING_DIR/docker-compose.yml $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_DIR/docker-compose.yml
+
+    # 2. uzak makinede değişkenleri export ederek docker login + compose işlemleri
+    - ssh -o IdentitiesOnly=yes -i /tmp/ssh_key $DEPLOY_USER@$DEPLOY_HOST "
+      export CI_REGISTRY_USER='$CI_REGISTRY_USER';
+      export CI_REGISTRY_PASSWORD='$CI_REGISTRY_PASSWORD';
+      echo \$CI_REGISTRY_PASSWORD | docker login -u \$CI_REGISTRY_USER --password-stdin http://192.168.0.79:5050 &&
+      cd $DEPLOY_DIR &&
+      docker compose pull &&
+      docker compose up -d --force-recreate
+      "
+
+  only:
+    - master
+  when: on_success

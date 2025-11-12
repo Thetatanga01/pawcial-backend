@@ -1,0 +1,44 @@
+# Development Profile Configuration
+# Bu dosya sadece %dev profile'ında aktif olur
+# Çalıştırmak için: ./mvnw quarkus:dev
+# TÜM SECRET'LAR VAULT'TAN ÇEKİLİR - DEFAULT VALUE YOK!
+
+quarkus:
+  # Vault Configuration - DEV environment
+  # Values auto-injected from Vault using secret-config-kv-path
+  # No need to specify username, password, port, etc. - they come from Vault!
+
+  # Development mode ayarları
+  log:
+    # Base log level comes from Vault, but we add debug categories here
+    console:
+      enable: true
+      format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
+    category:
+      "com.pawcial":
+        level: DEBUG
+      "org.hibernate":
+        level: INFO
+      "io.quarkus.security":
+        level: DEBUG
+      "io.quarkus.vault":
+        level: TRACE
+      "io.quarkus.vault.runtime.config":
+        level: TRACE
+
+  # Development - Live reload
+  live-reload:
+    instrumentation: true
+
+  # Development - Swagger her zaman açık
+  swagger-ui:
+    always-include: true
+    enable: true
+    path: /swagger-ui
+
+  # Development - Hibernate SQL logging
+  hibernate-orm:
+    log:
+      sql: true  # SQL query'leri görürsünüz
+
+
