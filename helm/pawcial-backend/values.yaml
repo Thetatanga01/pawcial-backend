@@ -1,0 +1,141 @@
+# Default values for pawcial-backend
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  registry: 192.168.0.79:5050
+  repository: mustafaguven/pawcial-backend/pawcial-backend
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  hosts:
+    - host: pawcial.guven.uk
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: pawcial-backend-tls
+      hosts:
+        - pawcial.guven.uk
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+livenessProbe:
+  httpGet:
+    path: /q/health/live
+    port: 8000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /q/health/ready
+    port: 8000
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Vault Configuration
+vault:
+  enabled: true
+  address: "https://vault.guven.uk"
+  # Vault token will be stored in a Kubernetes secret
+  authMethod: token
+  # Path to dev secrets in Vault
+  secretPath: "pawcial/dev"
+
+# Environment Configuration
+env:
+  # Quarkus profile (dev or prod)
+  profile: dev
+  # These will be set from Vault
+  # VAULT_URL and VAULT_TOKEN come from secret
+
+# PostgreSQL (external - from Vault)
+postgresql:
+  enabled: false
+  external: true
+  # All connection details come from Vault:
+  # - quarkus.datasource.jdbc.url
+  # - quarkus.datasource.username
+  # - quarkus.datasource.password
+
+# AWS S3 Configuration (from Vault)
+aws:
+  # All AWS credentials come from Vault:
+  # - aws.access.key.id
+  # - aws.secret.access.key
+  # - aws.s3.bucket-name
+  # - aws.s3.region
+
+# Keycloak OIDC Configuration (from Vault)
+oidc:
+  # All OIDC settings come from Vault:
+  # - quarkus.oidc.auth-server-url
+  # - quarkus.oidc.client-id
+  # - quarkus.oidc.credentials.secret
+  # - quarkus.oidc.token.issuer
+
+# Google OAuth (from Vault)
+google:
+  # All Google OAuth settings come from Vault:
+  # - quarkus.oidc.google.client-id
+  # - quarkus.oidc.google.credentials.secret
+

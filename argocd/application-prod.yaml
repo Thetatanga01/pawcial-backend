@@ -1,0 +1,56 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pawcial-backend-prod
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  # Source: Git repository
+  source:
+    repoURL: 'ssh://git@192.168.0.79:2222/mustafaguven/pawcial-backend.git'
+    targetRevision: master
+    path: helm/pawcial-backend
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-prod.yaml
+      parameters:
+        - name: image.tag
+          value: latest
+        - name: env.profile
+          value: prod
+        - name: vault.secretPath
+          value: pawcial/prod
+
+  # Destination: Kubernetes cluster
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: pawcial
+
+  # Sync policy
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+  # Ignore differences
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+

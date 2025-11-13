@@ -1,0 +1,31 @@
+# Production values for pawcial-backend
+# Override default values for production environment
+
+replicaCount: 2
+
+image:
+  tag: "latest"
+  pullPolicy: Always
+
+resources:
+  limits:
+    cpu: 4000m
+    memory: 4Gi
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+# Vault Configuration for Production
+vault:
+  secretPath: "pawcial/prod"
+
+# Environment Configuration
+env:
+  profile: prod
+

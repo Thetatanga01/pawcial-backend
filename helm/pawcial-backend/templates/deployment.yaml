@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pawcial-backend.fullname" . }}
+  namespace: pawcial
+  labels:
+    {{- include "pawcial-backend.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "pawcial-backend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "pawcial-backend.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "pawcial-backend.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.service.targetPort }}
+          protocol: TCP
+        env:
+        # Quarkus Profile
+        - name: QUARKUS_PROFILE
+          value: {{ .Values.env.profile | quote }}
+        # Vault Configuration from Secret
+        - name: VAULT_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "pawcial-backend.fullname" . }}-vault
+              key: VAULT_URL
+        - name: VAULT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "pawcial-backend.fullname" . }}-vault
+              key: VAULT_TOKEN
+        # Vault integration configuration
+        - name: QUARKUS_VAULT_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "pawcial-backend.fullname" . }}-vault
+              key: VAULT_URL
+        - name: QUARKUS_VAULT_AUTHENTICATION_CLIENT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "pawcial-backend.fullname" . }}-vault
+              key: VAULT_TOKEN
+        - name: QUARKUS_VAULT_KV_SECRET_CONFIG_KV_PATH
+          value: {{ .Values.vault.secretPath | quote }}
+        livenessProbe:
+          {{- toYaml .Values.livenessProbe | nindent 12 }}
+        readinessProbe:
+          {{- toYaml .Values.readinessProbe | nindent 12 }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+

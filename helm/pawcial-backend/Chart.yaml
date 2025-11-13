@@ -1,0 +1,14 @@
+apiVersion: v2
+name: pawcial-backend
+description: Pawcial Backend API - Quarkus application with Vault integration
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - pawcial
+  - backend
+  - quarkus
+  - vault
+maintainers:
+  - name: Mustafa Guven
+
