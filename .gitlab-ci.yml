@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - helm-lint
   - docker
   - deploy
 
@@ -25,6 +26,19 @@ test:
   script:
     - cd $WORKING_DIR
     - mvn test
+  only:
+    - master
+
+helm-lint:
+  stage: helm-lint
+  image:
+    name: alpine/helm:3.13.1
+    entrypoint: [""]
+  tags:
+    - docker
+  script:
+    - helm lint helm/pawcial-backend
+    - helm template helm/pawcial-backend --debug
   only:
     - master
 
